@@ -1,0 +1,59 @@
+[versions]
+agp = "8.12.1"
+kotlin = "2.2.10"
+
+activityCompose = "1.10.1"
+datastorePreferences = "1.1.7"
+composeBom = "2025.08.00"
+
+glance = "1.1.1"
+remoteViews = "1.1.0"
+asm = "9.8"
+
+junit4 = "4.13.2"
+lint = "31.12.1"
+dokka = "2.0.0"
+
+[libraries]
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+
+# Library
+androidx-glance = { group = "androidx.glance", name = "glance-appwidget", version.ref = "glance" }
+androidx-remoteviews = { group = "androidx.core", name = "core-remoteviews", version.ref = "remoteViews" }
+
+# Plugin
+android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+asm-commons = { module = "org.ow2.asm:asm-commons", version.ref = "asm" }
+asm-util = { module = "org.ow2.asm:asm-util", version.ref = "asm" }
+
+# Testing
+junit = { group = "junit", name = "junit", version.ref = "junit4" }
+
+# Lint
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+lint-api = { module = "com.android.tools.lint:lint-api", version.ref = "lint" }
+lint-cli = { module = "com.android.tools.lint:lint", version.ref = "lint" }
+lint-checks = { module = "com.android.tools.lint:lint-checks", version.ref = "lint" }
+lint-tests = { module = "com.android.tools.lint:lint-tests", version.ref = "lint" }
+
+# Docs
+dokka-versioning-plugin = { module = "org.jetbrains.dokka:versioning-plugin", version.ref = "dokka" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+android-lint = { id = "com.android.lint", version.ref = "agp" }
+
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+
+glancet = { id = "dev.gonodono.glancet" }

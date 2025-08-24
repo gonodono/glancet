@@ -1,0 +1,13 @@
+<resources>
+
+    <string name="app_name">Glancet</string>
+
+    <string name="list_view">ListView</string>
+    <string name="grid_view">GridView</string>
+    <string name="stack_view">StackView</string>
+    <string name="adapter_view_flipper">AdapterViewFlipper</string>
+
+    <string name="lazy_column_compat">LazyColumnCompat</string>
+    <string name="lazy_vertical_grid_compat">LazyVerticalGridCompat</string>
+
+</resources>

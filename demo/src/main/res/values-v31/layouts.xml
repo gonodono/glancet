@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="control_panel" type="layout">@layout/include_initial_buttons</item>
+</resources>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.Material.Light.NoActionBar">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+
+        <!-- Remote Adapter Widgets -->
+
+        <receiver
+            android:name=".ListViewWidgetReceiver"
+            android:exported="true"
+            android:label="@string/list_view">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/list_view_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".GridViewWidgetReceiver"
+            android:exported="true"
+            android:label="@string/grid_view">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/grid_view_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".StackViewWidgetReceiver"
+            android:exported="true"
+            android:label="@string/stack_view">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/stack_view_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".AdapterViewFlipperWidgetReceiver"
+            android:enabled="@bool/isAtLeastApi31"
+            android:exported="true"
+            android:label="@string/adapter_view_flipper">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/adapter_view_flipper_widget_info" />
+        </receiver>
+
+        <!-- Currently unused; preserved for future testing, etc. -->
+        <service
+            android:name=".internal.RemoteAdapterWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+
+        <!-- Lazy Compat Widgets -->
+
+        <receiver
+            android:name=".LazyColumnCompatWidgetReceiver"
+            android:exported="true"
+            android:label="@string/lazy_column_compat">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/list_view_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".LazyVerticalGridCompatWidgetReceiver"
+            android:exported="true"
+            android:label="@string/lazy_vertical_grid_compat">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/grid_view_widget_info" />
+        </receiver>
+
+    </application>
+
+</manifest>
