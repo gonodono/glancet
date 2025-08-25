@@ -56,16 +56,16 @@ class ActivationDetectorTest : GlancetLintTest() {
                 """.trimIndent(),
             expectedText =
                 """
-                src/test.kt:13: Error: Glancet features must be activated with the plugin. Be sure to rebuild after adding/updating it. [FeatureNotActivated]
+                src/test.kt:13: Error: Glancet features must be activated with the plugin. Be sure to rebuild after adding or updating it. [FeatureNotActivated]
                     AndroidRemoteViews(GlanceModifier.remoteAdapter())
                                                       ~~~~~~~~~~~~~
-                src/test.kt:14: Error: Glancet features must be activated with the plugin. Be sure to rebuild after adding/updating it. [FeatureNotActivated]
+                src/test.kt:14: Error: Glancet features must be activated with the plugin. Be sure to rebuild after adding or updating it. [FeatureNotActivated]
                     LazyColumnCompat()
                     ~~~~~~~~~~~~~~~~
-                src/test.kt:15: Error: Glancet features must be activated with the plugin. Be sure to rebuild after adding/updating it. [FeatureNotActivated]
+                src/test.kt:15: Error: Glancet features must be activated with the plugin. Be sure to rebuild after adding or updating it. [FeatureNotActivated]
                     LazyVerticalGridCompat()
                     ~~~~~~~~~~~~~~~~~~~~~~
-                3 errors 
+                3 errors
                 """.trimIndent()
         )
 }

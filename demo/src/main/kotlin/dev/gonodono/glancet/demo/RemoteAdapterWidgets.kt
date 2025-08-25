@@ -16,7 +16,6 @@ import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.provideContent
 import androidx.glance.layout.fillMaxSize
-import dev.gonodono.glancet.demo.R.id.text
 import dev.gonodono.glancet.demo.internal.ActionItemClick
 import dev.gonodono.glancet.demo.internal.ExtraItemPosition
 import dev.gonodono.glancet.demo.internal.ItemCount
@@ -119,15 +118,21 @@ private class AdapterViewWidget(
             RemoteViews(context.packageName, layoutId)
                 .apply { setPendingIntentTemplate(adapterViewId, clickPending) }
 
-        // This can easily be switched out with an Intent for
+        // These items could easily be switched out with an Intent for
         // RemoteAdapterWidgetService (located in the `internal` subpackage), or
         // with the platform version of RemoteCollectionItems on API levels 31+.
         val adapterItems =
             RemoteViewsCompat.RemoteCollectionItems.Builder().run {
-                repeat(ItemCount) { index ->
+                repeat(ItemCount) { position ->
                     val views = RemoteViews(context.packageName, itemLayoutId)
-                    views.setTextViewText(text, "#$index")
-                    addItem(index.toLong(), views)
+                    views.setTextViewText(R.id.text, "#$position")
+
+                    val click = Intent()
+                        .apply { appWidgetIdExtra = appWidgetId }
+                        .putExtra(ExtraItemPosition, position)
+                    views.setOnClickFillInIntent(R.id.text, click)
+
+                    addItem(position.toLong(), views)
                 }
                 build()
             }

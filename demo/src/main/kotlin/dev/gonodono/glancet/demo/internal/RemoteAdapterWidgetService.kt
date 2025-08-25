@@ -10,12 +10,6 @@ import dev.gonodono.glancet.demo.R
 
 class RemoteAdapterWidgetService : RemoteViewsService() {
 
-    override fun onGetViewFactory(intent: Intent): RemoteViewsFactory {
-        val appWidgetId = intent.appWidgetIdExtra
-        val itemLayoutId = intent.getIntExtra(ExtraItemLayoutId, 0)
-        return RemoteAdapterWidgetFactory(this, appWidgetId, itemLayoutId)
-    }
-
     companion object {
 
         @Suppress("unused")
@@ -27,6 +21,12 @@ class RemoteAdapterWidgetService : RemoteViewsService() {
             Intent(context, RemoteAdapterWidgetService::class.java)
                 .apply { appWidgetIdExtra = appWidgetId }
                 .putExtra(ExtraItemLayoutId, itemLayoutId)
+    }
+
+    override fun onGetViewFactory(intent: Intent): RemoteViewsFactory {
+        val appWidgetId = intent.appWidgetIdExtra
+        val itemLayoutId = intent.getIntExtra(ExtraItemLayoutId, 0)
+        return RemoteAdapterWidgetFactory(this, appWidgetId, itemLayoutId)
     }
 }
 

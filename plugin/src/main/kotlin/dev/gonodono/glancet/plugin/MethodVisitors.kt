@@ -5,7 +5,7 @@ import org.objectweb.asm.commons.AdviceAdapter
 
 internal fun interface MethodVisitorFactory {
 
-    fun createAdvice(
+    fun createVisitor(
         api: Int,
         methodVisitor: MethodVisitor,
         access: Int,

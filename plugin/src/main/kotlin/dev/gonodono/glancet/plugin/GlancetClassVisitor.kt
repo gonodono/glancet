@@ -63,7 +63,7 @@ internal class GlancetClassVisitor(
 
         return if (modification.isTargetMethod(name, descriptor)) {
             modification.methodVisitorFactory
-                .createAdvice(api, methodVisitor, access, name, descriptor)
+                .createVisitor(api, methodVisitor, access, name, descriptor)
         } else {
             methodVisitor
         }

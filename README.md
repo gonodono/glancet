@@ -1,6 +1,6 @@
 # Glancet
 
-Tools for Glance app widgets on Android
+Tools and extended composables for Glance app widgets on Android
 
 <br />
 
@@ -43,7 +43,7 @@ uses [a built-in AGP functionality][transform], along with some basic Java ASM.
 
 Until everything gets published to the main repository services, the `library`
 and `plugin` modules will have to be built and published manually in order to be
-able to use this (unless you want to include the projects directly). If you
+able to use this (unless you'd like to include the projects directly). If you
 would want to utilize your local Maven repository, all it takes is to run two
 predefined Gradle tasks in this project, and then to add a couple of
 `mavenLocal()` lines to your app's project.
@@ -137,9 +137,9 @@ modules's [`build.gradle.kts` file][demo-build].
 
 ### Plugin logs
 
-For reference, the default settings will produce the following logs for a debug
-variant. (A single log would probably be preferable, but this particular tool
-makes that a bit tricky.)
+For reference, the default settings will produce the following build logs for a
+debug variant. (A single log would probably be preferable, but this particular
+tool makes that a bit tricky.)
 
 ```
 Glancet has modified debug to enable remoteAdapter.
@@ -174,9 +174,9 @@ Glance's public API.
 
 The manner in which Glance pieces together its own composables manages to avoid
 this issue. When we use `AndroidRemoteViews`, however, we have to pass the whole
-shebang already assembled, since we have no access to the parent `RemoteViews`,
-as that's all been abstracted away. `remoteAdapter` basically passes the adapter
-data to an injected function where we can attach it to the parent instead.
+shebang already assembled, and we have no access to the parent `RemoteViews`
+since that's all been abstracted away. `remoteAdapter` basically passes the
+adapter data to an injected function where it's attached to the parent instead.
 
 ### Example
 
@@ -210,8 +210,8 @@ fun RemoteAdapterExample() {
 }
 ```
 
-You can see that the state object is created with a standard `remember*State`
-function, one available for each type of `AdapterView` (not counting overloads):
+The state object is created with a standard `remember*State` function, one
+available for each type of `AdapterView` (not counting overloads):
 
 - `rememberListViewState`
 - `rememberGridViewState`
@@ -224,7 +224,7 @@ same thing, as do the `StackView` and `AdapterViewFlipper` versions. The
 difference between the two types is the scroll functions that each offers, which
 are covered below.
 
-Complete examples can be found in the demo's [`RemoteAdapterWidgets`
+Complete examples can be found in the `demo`'s [`RemoteAdapterWidgets`
 file][remote-adapter].
 
 ### Lint check
@@ -251,7 +251,7 @@ themselves.
 
 > [!WARNING]
 > The programmatic scroll functions only work on API levels 31+, but there are
-> currently no annotations or warnings to indicate that.
+> currently no annotations or lint warnings to indicate that.
 
 <br />
 
@@ -266,7 +266,7 @@ functions.
 Unfortunately these functions only work on API levels 31 and above, due to the
 fact that Glance only ever performs full updates – i.e., no
 `partiallyUpdateAppWidget` – and 31 is the first version to preserve state like
-scroll position and displayed child across such updates.
+the scroll position across such updates.
 
 I'm not sure how to handle this, however, since `@RequiresApi` annotations are
 a bit unorthodox in Compose. It seems they prefer to mention in the docs that a
@@ -283,8 +283,8 @@ fun LazyColumnCompatExample() {
 
   Column(modifier = GlanceModifier.fillMaxSize()) {
 
-      // No setup or data for this; it's just exposing some command functions.
-      val state = rememberLazyCompatState()
+        // No setup or data for this; it's just exposing some command functions.
+        val state = rememberLazyCompatState()
 
         LazyColumnCompat(
             state = state,
@@ -298,8 +298,8 @@ fun LazyColumnCompatExample() {
         // It's a regular LazyColumn underneath so we can still use it as that.
         if (Build.VERSION.SDK_INT < 31) return@Column
 
-        // 2 seems to be the minimum effective absolute value, but that's not
-        // specific to this library. Regular RemoteViews setups behave similarly.
+        // 2 seems to be the minimum effective magnitude, but that's not unique
+        // to this library. Classic RemoteViews setups display similar behavior.
         Button("-->", { state.smoothScrollByOffset(2) })
         Button("<--", { state.smoothScrollByOffset(-2) })
     }
@@ -309,7 +309,7 @@ fun LazyColumnCompatExample() {
 Both of the compat composables use the same `rememberLazyCompatState` function
 and state type.
 
-Complete examples can be found in the demo's [`LazyCompatWidgets`
+Complete examples can be found in the `demo` module's [`LazyCompatWidgets`
 file][lazy-compat].
 
 <br />
@@ -354,7 +354,7 @@ not tested any.
   </p>
 
   On API levels 30 and below, the `AdapterViewFlipper` widget, as well as the
-  arrow buttons in the rest of the widgets, are all disabled due to the
+  navigation buttons in the rest of the widgets, are all disabled due to the
   aforementioned restrictions.
 
   The Activity's UI (not shown) was designed on and for medium phone setups

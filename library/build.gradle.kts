@@ -1,3 +1,4 @@
+import org.gradle.internal.extensions.stdlib.capitalized
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.time.Year
 
@@ -45,7 +46,7 @@ dokka {
     val rootDir = rootProject.layout.projectDirectory
 
     basePublicationsDirectory = rootDir
-    moduleName = rootProject.name
+    moduleName = rootProject.name.capitalized()
 
     pluginsConfiguration {
         html {

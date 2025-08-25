@@ -13,7 +13,6 @@ import androidx.glance.appwidget.provideContent
 import androidx.glance.background
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
-import androidx.glance.layout.Column
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.height
@@ -51,7 +50,7 @@ private fun LazyColumnCompatContent() {
         ) {
             items(count = ItemCount, itemId = Int::toLong) { index ->
                 val bottom = if (index < ItemCount - 1) 10.dp else 0.dp
-                Column(modifier = GlanceModifier.padding(bottom = bottom)) {
+                Box(modifier = GlanceModifier.padding(bottom = bottom)) {
                     ItemText(
                         index = index,
                         modifier = GlanceModifier
@@ -96,7 +95,7 @@ private fun LazyVerticalGridCompatContent() {
                         end = if (index.isEven) 5.dp else 0.dp,
                         bottom = if (index < ItemCount - 1) 10.dp else 0.dp
                     )
-                Column(modifier = modifier) {
+                Box(modifier = modifier) {
                     ItemText(
                         index = index,
                         modifier = GlanceModifier.size(60.dp)

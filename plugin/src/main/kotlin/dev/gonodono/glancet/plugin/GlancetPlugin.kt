@@ -2,12 +2,12 @@ package dev.gonodono.glancet.plugin
 
 import com.android.build.api.instrumentation.InstrumentationScope
 import com.android.build.api.variant.AndroidComponentsExtension
-import com.android.build.api.variant.impl.capitalizeFirstChar
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.internal.extensions.stdlib.capitalized
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -57,7 +57,7 @@ private fun Project.applyGlancetPlugin(extension: GlancetPluginExtension) =
 
 private fun Project.configureLintSignalTask(variantName: String) =
     this.afterEvaluate {
-        val suffix = variantName.capitalizeFirstChar()
+        val suffix = variantName.capitalized()
 
         val glancet =
             this.extensions.getByType(GlancetPluginExtension::class.java)

@@ -17,7 +17,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -101,23 +102,22 @@ private fun MainContent() {
         }
     ) { paddingValues ->
 
-        val canPin = LocalContext.current.canPinAppWidgets()
-
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
                 .padding(20.dp),
             verticalArrangement =
                 Arrangement.spacedBy(20.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (canPin) {
-                item { RemoteAdapterContent() }
-                item { LazyCompatContent() }
-                item { AppSettings() }
+            if (LocalContext.current.canPinAppWidgets()) {
+                RemoteAdapterContent()
+                LazyCompatContent()
+                AppSettings()
             } else {
-                item { Text("Unable to pin widgets. Please place manually.") }
+                Text("Unable to pin widgets. Please place manually.")
             }
         }
     }

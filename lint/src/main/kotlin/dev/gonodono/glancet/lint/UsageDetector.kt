@@ -45,9 +45,12 @@ public class UsageDetector : Detector(), SourceCodeScanner {
                     "Invalid Composable for remoteAdapter",
                 explanation =
                     "remoteAdapter works only with AndroidRemoteViews.",
-                category = Category.CORRECTNESS,
-                priority = 7,
-                severity = Severity.ERROR,
+                category =
+                    Category.CORRECTNESS,
+                priority =
+                    7,
+                severity =
+                    Severity.ERROR,
                 implementation =
                     Implementation(
                         UsageDetector::class.java,

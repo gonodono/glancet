@@ -65,10 +65,13 @@ public class ActivationDetector : Detector(), SourceCodeScanner {
                     "Missing Glancet plugin activation",
                 explanation =
                     "Glancet features must be activated with the plugin. " +
-                            "Be sure to rebuild after adding/updating it.",
-                category = Category.CORRECTNESS,
-                priority = 7,
-                severity = Severity.ERROR,
+                            "Be sure to rebuild after adding or updating it.",
+                category =
+                    Category.CORRECTNESS,
+                priority =
+                    7,
+                severity =
+                    Severity.ERROR,
                 implementation =
                     Implementation(
                         ActivationDetector::class.java,

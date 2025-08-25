@@ -9,7 +9,7 @@ plugins {
 
 // Example of using the plugin extension.
 // The values given below are the defaults.
-// Be sure the rebuild after any changes.
+// Be sure to rebuild after any changes.
 glancet {
     remoteAdapter = true
     lazyColumnCompat = true

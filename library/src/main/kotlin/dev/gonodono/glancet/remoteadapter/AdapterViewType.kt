@@ -4,8 +4,8 @@ package dev.gonodono.glancet.remoteadapter
  * Category types for the two distinct [AdapterView][android.widget.AdapterView]
  * implementations.
  *
- * These aren't being used anywhere in the library currently. They've been
- * retained as general information.
+ * These aren't used anywhere in the library currently. They've been retained as
+ * general information.
  */
 public sealed interface AdapterViewType {
 

@@ -135,11 +135,16 @@ private class LazyCompatAdvice(
         // Ldev/gonodono/glancet/lazycompat/TranslationContext;
         visitVarInsn(ALOAD, 3)
         visitMethodInsn(
-            /* opcodeAndSource = */ INVOKEVIRTUAL,
-            /* owner = */ "androidx/glance/appwidget/InsertedViewInfo",
-            /* name = */ "getMainViewId",
-            /* descriptor = */ "()I",
-            /* isInterface = */ false
+            /* opcodeAndSource = */
+            INVOKEVIRTUAL,
+            /* owner = */
+            "androidx/glance/appwidget/InsertedViewInfo",
+            /* name = */
+            "getMainViewId",
+            /* descriptor = */
+            "()I",
+            /* isInterface = */
+            false
         )
 
         visitMethodInsn(
