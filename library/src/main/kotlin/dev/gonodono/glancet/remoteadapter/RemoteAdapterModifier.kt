@@ -1,6 +1,5 @@
 package dev.gonodono.glancet.remoteadapter
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -8,9 +7,8 @@ import android.widget.RemoteViews
 import androidx.annotation.DoNotInline
 import androidx.annotation.RequiresApi
 import androidx.core.widget.RemoteViewsCompat
-import androidx.glance.Emittable
 import androidx.glance.GlanceModifier
-import androidx.glance.findModifier
+import dev.gonodono.glancet.find
 
 /**
  * Attaches a [RemoteAdapterState] to the Composable's [GlanceModifier] chain in
@@ -19,7 +17,7 @@ import androidx.glance.findModifier
 public fun GlanceModifier.remoteAdapter(state: RemoteAdapterState): GlanceModifier =
     this then RemoteAdapterModifier(state as RemoteAdapterStateImpl)
 
-private class RemoteAdapterModifier(val state: RemoteAdapterStateImpl) :
+internal class RemoteAdapterModifier(val state: RemoteAdapterStateImpl) :
     GlanceModifier.Element {
 
     init {
@@ -57,13 +55,11 @@ internal sealed interface RemoteAdapter {
 
 // NB: This must remain in the same file as the corresponding GlanceModifier
 // extension function in order to ensure that Proguard/R8 handles it correctly.
-@SuppressLint("RestrictedApi")
 @JvmName("setRemoteAdapterIfPresent")
-internal fun RemoteViews.setRemoteAdapterIfPresent(element: Emittable) {
-    val modifier =
-        element.modifier.findModifier<RemoteAdapterModifier>() ?: return
+internal fun RemoteViews.setRemoteAdapterIfPresent(modifier: GlanceModifier) {
+    val remoteAdapter = modifier.find<RemoteAdapterModifier>() ?: return
 
-    when (val adapter = modifier.state.adapter) {
+    when (val adapter = remoteAdapter.state.adapter) {
         is RemoteAdapter.Items.Compat -> {
             RemoteViewsCompat.setRemoteAdapter(
                 context = adapter.context,
@@ -87,7 +83,7 @@ internal fun RemoteViews.setRemoteAdapterIfPresent(element: Emittable) {
         }
     }
 
-    modifier.state.action?.invoke(this)
+    remoteAdapter.state.action?.invoke(this)
 }
 
 @RequiresApi(31)

@@ -12,9 +12,7 @@ java {
 }
 
 kotlin {
-    compilerOptions {
-        jvmTarget = JvmTarget.JVM_17
-    }
+    compilerOptions.jvmTarget = JvmTarget.JVM_17
     explicitApi()
 }
 

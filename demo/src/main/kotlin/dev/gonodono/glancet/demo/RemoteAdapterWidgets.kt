@@ -139,10 +139,10 @@ private class AdapterViewWidget(
 
         provideContent {
             RemoteAdapterWidgetContent(
+                remoteViews = remoteViews,
                 adapterViewId = adapterViewId,
                 adapterViewType = receiver.adapterViewType,
-                adapterItems = adapterItems,
-                remoteViews = remoteViews
+                adapterItems = adapterItems
             )
         }
     }
@@ -150,10 +150,10 @@ private class AdapterViewWidget(
 
 @Composable
 private fun RemoteAdapterWidgetContent(
+    remoteViews: RemoteViews,
     adapterViewId: Int,
     adapterViewType: AdapterViewType,
-    adapterItems: RemoteViewsCompat.RemoteCollectionItems,
-    remoteViews: RemoteViews
+    adapterItems: RemoteViewsCompat.RemoteCollectionItems
 ) {
     val adapterState =
         when (adapterViewType) {

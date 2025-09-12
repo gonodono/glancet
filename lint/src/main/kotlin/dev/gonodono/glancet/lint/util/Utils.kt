@@ -6,7 +6,7 @@ import com.android.tools.lint.detector.api.TextFormat
 import com.intellij.psi.PsiMethod
 import org.jetbrains.uast.UCallExpression
 
-internal const val LintSignalDirectory = "outputs/glancet/"
+internal const val LintTokensDirectory = "outputs/glancet/"
 
 internal val JavaContext.isRunningInUnitTest: Boolean
     get() = this.client.getClientDisplayName() == "Lint Unit Tests"

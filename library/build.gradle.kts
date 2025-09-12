@@ -1,13 +1,11 @@
-import org.gradle.internal.extensions.stdlib.capitalized
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import java.time.Year
 
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.vanniktech.publish)
     alias(libs.plugins.dokka)
-    id("maven-publish")
 }
 
 android {
@@ -17,6 +15,7 @@ android {
     defaultConfig {
         minSdk = 21
         consumerProguardFiles("consumer-rules.pro")
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildFeatures {
@@ -27,51 +26,69 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    publishing {
-        singleVariant("release") {
-            withJavadocJar()
-            withSourcesJar()
-        }
+    testOptions {
+        unitTests.isReturnDefaultValues = true
     }
 }
 
 kotlin {
-    compilerOptions {
-        jvmTarget = JvmTarget.JVM_17
-    }
+    compilerOptions.jvmTarget = JvmTarget.JVM_17
     explicitApi()
 }
 
-dokka {
-    val rootDir = rootProject.layout.projectDirectory
+project.group = requireProperty("group.id")
+project.version = requireProperty("library.version")
 
-    basePublicationsDirectory = rootDir
-    moduleName = rootProject.name.capitalized()
+mavenPublishing {
+    publishToMavenCentral(automaticRelease = true)
+    signAllPublications()
 
-    pluginsConfiguration {
-        html {
-            customAssets.from(rootDir.dir("images").file("logo-icon.svg"))
-            homepageLink = requireProperty("repository.url")
-            footerMessage =
-                "© ${Year.now().value} ${requireProperty("developer.name")}"
+    coordinates(
+        groupId = project.group.toString(),
+        artifactId = rootProject.name,
+        version = project.version.toString()
+    )
+
+    pom {
+        name =
+            "Glancet"
+        description =
+            "Tools and extended composables for Glance app widgets on Android."
+        url =
+            "https://github.com/gonodono/glancet"
+        inceptionYear =
+            "2025"
+
+        scm {
+            url =
+                "https://github.com/gonodono/glancet"
+            connection =
+                "scm:git:git://github.com/gonodono/glancet.git"
+            developerConnection =
+                "scm:git:ssh://github.com/gonodono/glancet.git"
         }
-
-        versioning {
-            // olderVersionsDir = TBD
-            version = requireProperty("library.version")
+        licenses {
+            name = "The MIT License"
+            url = "https://opensource.org/license/mit"
+        }
+        developers {
+            developer {
+                id = "gonodono"
+                name = "Mike M."
+                email = "gonodono137@gmail.com"
+            }
         }
     }
 }
 
-afterEvaluate {
-    publishing {
-        publications {
-            create<MavenPublication>("release") {
-                from(components["release"])
-                groupId = requireProperty("group.id")
-                artifactId = "glancet"
-                version = requireProperty("library.version")
-            }
+dokka {
+    moduleName = rootProject.name
+    modulePath = rootProject.name + project.path.replace(":", "/")
+    dokkaSourceSets.configureEach { includes.from("docs.module.md") }
+
+    dokkaPublications {
+        html {
+            outputDirectory = rootProject.layout.buildDirectory.dir("docs")
         }
     }
 }
@@ -81,8 +98,14 @@ dependencies {
     implementation(libs.androidx.glance)
     implementation(libs.androidx.remoteviews)
 
-    lintPublish(projects.lint)
+    testImplementation(libs.junit)
+    testImplementation(libs.androidx.junit)
+    testImplementation(libs.androidx.test.runner)
+    testImplementation(libs.androidx.glance.testing)
+    testImplementation(libs.androidx.glance.appwidget.testing)
+    testImplementation(libs.roboelectric)
 
+    lintPublish(projects.lint)
     dokkaHtmlPlugin(libs.dokka.versioning.plugin)
 }
 

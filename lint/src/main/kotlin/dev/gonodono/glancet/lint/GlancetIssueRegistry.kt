@@ -13,7 +13,7 @@ public class GlancetIssueRegistry : IssueRegistry() {
 
     override val issues: List<Issue> =
         listOf(
-            ActivationDetector.FeatureNotActivated,
+            ActivationDetector.GlancetFeatureNotActivated,
             UsageDetector.RemoteAdapterInvalidComposable
         )
 

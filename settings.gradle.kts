@@ -16,7 +16,7 @@ pluginManagement {
 
 dependencyResolutionManagement {
     @Suppress("UnstableApiUsage")
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
 
     @Suppress("UnstableApiUsage")
     repositories {
@@ -30,5 +30,8 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "glancet"
 
 include(":library")
+include(":tests")
 include(":lint")
 include(":demo")
+
+includeBuild("docs")

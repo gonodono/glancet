@@ -1,15 +1,13 @@
 package dev.gonodono.glancet.lazycompat
 
-import android.annotation.SuppressLint
 import android.widget.RemoteViews
-import androidx.glance.Emittable
 import androidx.glance.GlanceModifier
-import androidx.glance.findModifier
+import dev.gonodono.glancet.find
 
 internal fun GlanceModifier.lazyCompat(state: LazyCompatState): GlanceModifier =
     this then LazyCompatModifier(state as LazyCompatStateImpl)
 
-private class LazyCompatModifier(val state: LazyCompatStateImpl) :
+internal class LazyCompatModifier(val state: LazyCompatStateImpl) :
     GlanceModifier.Element {
 
     init {
@@ -22,13 +20,12 @@ private class LazyCompatModifier(val state: LazyCompatStateImpl) :
 
 // NB: This must remain in the same file as the corresponding GlanceModifier
 // extension function in order to ensure that Proguard/R8 handles it correctly.
-@SuppressLint("RestrictedApi")
 @JvmName("applyLazyCompatIfPresent")
 internal fun RemoteViews.applyLazyCompatIfPresent(
-    element: Emittable,
+    modifier: GlanceModifier,
     adapterViewId: Int
 ) {
-    val modifier = element.modifier.findModifier<LazyCompatModifier>() ?: return
+    val lazyCompat = modifier.find<LazyCompatModifier>() ?: return
 
-    modifier.state.action?.invoke(this, adapterViewId)
+    lazyCompat.state.action?.invoke(this, adapterViewId)
 }

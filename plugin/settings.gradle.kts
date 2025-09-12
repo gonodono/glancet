@@ -1,6 +1,6 @@
 dependencyResolutionManagement {
     @Suppress("UnstableApiUsage")
-    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+    repositoriesMode = RepositoriesMode.PREFER_SETTINGS
 
     @Suppress("UnstableApiUsage")
     repositories {

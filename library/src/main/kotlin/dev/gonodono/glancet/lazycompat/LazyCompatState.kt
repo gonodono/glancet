@@ -2,21 +2,13 @@ package dev.gonodono.glancet.lazycompat
 
 import android.os.Build
 import android.widget.RemoteViews
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.neverEqualPolicy
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import java.util.concurrent.atomic.AtomicBoolean
-
-/**
- * Creates and remembers a [LazyCompatState] for use with [LazyColumnCompat] or
- * [LazyVerticalGridCompat].
- */
-@Composable
-public fun rememberLazyCompatState(): LazyCompatState =
-    remember { LazyCompatStateImpl() }
 
 /**
  * The state interface for [LazyColumnCompat] and [LazyVerticalGridCompat] that
@@ -54,30 +46,46 @@ public interface LazyCompatState {
     public fun smoothScrollByOffset(offset: Int)
 }
 
-internal class LazyCompatStateImpl : LazyCompatState {
+/**
+ * Creates and remembers a [LazyCompatState] for use with [LazyColumnCompat] or
+ * [LazyVerticalGridCompat].
+ */
+@Composable
+public fun rememberLazyCompatState(): LazyCompatState =
+    remember { LazyCompatState() }
 
-    var action by mutableStateOf<Action?>(null, neverEqualPolicy())
-
-    override fun smoothScrollToPosition(position: Int) {
-        if (Build.VERSION.SDK_INT < 31) return
-
-        action = Action { setInt(it, "smoothScrollToPosition", position) }
+internal fun LazyCompatState(): LazyCompatState =
+    if (Build.VERSION.SDK_INT >= 31) {
+        LazyCompatStateApi31()
+    } else {
+        LazyCompatStateApiMin()
     }
 
-    override fun smoothScrollByOffset(offset: Int) {
-        if (Build.VERSION.SDK_INT < 31) return
-
-        action = Action { setInt(it, "smoothScrollByOffset", offset) }
-    }
+internal interface LazyCompatStateImpl : LazyCompatState {
+    val action: LazyCompatAction?
 }
 
-internal class Action(private val action: RemoteViews.(Int) -> Unit) :
-        (RemoteViews, Int) -> Unit {
+@RequiresApi(31)
+internal class LazyCompatStateApi31 : LazyCompatStateImpl {
 
-    private var wasInvoked = AtomicBoolean(false)
+    override var action
+            by mutableStateOf<LazyCompatAction?>(null, neverEqualPolicy())
+        private set
 
-    override fun invoke(remoteViews: RemoteViews, adapterViewId: Int) {
-        if (!wasInvoked.compareAndSet(false, true)) return
-        remoteViews.action(adapterViewId)
+    private fun setAction(action: RemoteViews.(Int) -> Unit) {
+        this.action = LazyCompatAction(action)
     }
+
+    override fun smoothScrollToPosition(position: Int) {
+        setAction { setInt(it, "smoothScrollToPosition", position) }
+    }
+
+    override fun smoothScrollByOffset(offset: Int) =
+        setAction { setInt(it, "smoothScrollByOffset", offset) }
+}
+
+internal class LazyCompatStateApiMin : LazyCompatStateImpl {
+    override val action: LazyCompatAction? = null
+    override fun smoothScrollToPosition(position: Int) {}
+    override fun smoothScrollByOffset(offset: Int) {}
 }

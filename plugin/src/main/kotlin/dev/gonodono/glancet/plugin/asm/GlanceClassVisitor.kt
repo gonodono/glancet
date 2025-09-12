@@ -1,18 +1,19 @@
-package dev.gonodono.glancet.plugin
+package dev.gonodono.glancet.plugin.asm
 
 import com.android.build.api.instrumentation.AsmClassVisitorFactory
 import com.android.build.api.instrumentation.ClassContext
 import com.android.build.api.instrumentation.ClassData
 import com.android.build.api.instrumentation.InstrumentationParameters
+import dev.gonodono.glancet.plugin.GlancetPluginExtension
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.MethodVisitor
 
-internal class GlancetClassVisitor(
+internal class GlanceClassVisitor(
     api: Int,
     classVisitor: ClassVisitor,
-    private val modification: Modification,
+    private val modification: MethodModification,
     private val variantName: String,
     private val suppressLogs: Boolean
 ) : ClassVisitor(api, classVisitor) {
@@ -28,6 +29,8 @@ internal class GlancetClassVisitor(
             val variantName: Property<String>
         }
 
+        private val extension get() = parameters.get().extension.get()
+
         override fun isInstrumentable(classData: ClassData): Boolean =
             Modifications.any { it.isMatch(classData.className, extension) }
 
@@ -37,7 +40,8 @@ internal class GlancetClassVisitor(
         ): ClassVisitor {
             val clazz = classContext.currentClassData.className
             val modification = Modifications.single { it.isTargetClass(clazz) }
-            return GlancetClassVisitor(
+
+            return GlanceClassVisitor(
                 api = instrumentationContext.apiVersion.get(),
                 classVisitor = nextClassVisitor,
                 modification = modification,
@@ -45,9 +49,6 @@ internal class GlancetClassVisitor(
                 suppressLogs = extension.suppressPluginLogs.get()
             )
         }
-
-        private val extension: GlancetPluginExtension
-            get() = parameters.get().extension.get()
     }
 
     override fun visitMethod(
@@ -56,26 +57,15 @@ internal class GlancetClassVisitor(
         descriptor: String?,
         signature: String?,
         exceptions: Array<out String?>?
-    ): MethodVisitor? {
-        val methodVisitor =
-            super.visitMethod(access, name, descriptor, signature, exceptions)
-                ?: return null
-
-        return if (modification.isTargetMethod(name, descriptor)) {
-            modification.methodVisitorFactory
-                .createVisitor(api, methodVisitor, access, name, descriptor)
-        } else {
-            methodVisitor
-        }
-    }
+    ): MethodVisitor? =
+        super.visitMethod(access, name, descriptor, signature, exceptions)
+            ?.let { modification.visitor(api, it, access, name, descriptor) }
 
     override fun visitEnd() {
         super.visitEnd()
-
         if (suppressLogs) return
-        println(
-            "Glancet has modified $variantName " +
-                    "to enable ${modification.featureName}."
-        )
+        println(PluginMessage.format(variantName, modification.featureName))
     }
 }
+
+internal const val PluginMessage = "Glancet has modified %1\$s to enable %2\$s."

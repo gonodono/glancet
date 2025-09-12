@@ -14,7 +14,7 @@ class ActivationDetectorTest : GlancetLintTest() {
     override fun getDetector(): Detector = ActivationDetector()
 
     override fun getIssues(): List<Issue>? =
-        listOf(ActivationDetector.FeatureNotActivated)
+        listOf(ActivationDetector.GlancetFeatureNotActivated)
 
     @Test
     fun `features are all activated`() =
@@ -56,13 +56,13 @@ class ActivationDetectorTest : GlancetLintTest() {
                 """.trimIndent(),
             expectedText =
                 """
-                src/test.kt:13: Error: Glancet features must be activated with the plugin. Be sure to rebuild after adding or updating it. [FeatureNotActivated]
+                src/test.kt:13: Error: Glancet features must be activated with the plugin. Be sure to rebuild after adding or updating it. [GlancetFeatureNotActivated]
                     AndroidRemoteViews(GlanceModifier.remoteAdapter())
                                                       ~~~~~~~~~~~~~
-                src/test.kt:14: Error: Glancet features must be activated with the plugin. Be sure to rebuild after adding or updating it. [FeatureNotActivated]
+                src/test.kt:14: Error: Glancet features must be activated with the plugin. Be sure to rebuild after adding or updating it. [GlancetFeatureNotActivated]
                     LazyColumnCompat()
                     ~~~~~~~~~~~~~~~~
-                src/test.kt:15: Error: Glancet features must be activated with the plugin. Be sure to rebuild after adding or updating it. [FeatureNotActivated]
+                src/test.kt:15: Error: Glancet features must be activated with the plugin. Be sure to rebuild after adding or updating it. [GlancetFeatureNotActivated]
                     LazyVerticalGridCompat()
                     ~~~~~~~~~~~~~~~~~~~~~~
                 3 errors

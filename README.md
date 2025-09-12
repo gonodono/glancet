@@ -1,6 +1,6 @@
 # Glancet
 
-Tools and extended composables for Glance app widgets on Android
+Tools and extended composables for [Glance app widgets][glance] on Android
 
 <br />
 
@@ -39,13 +39,12 @@ insert calls to local code where the underlying `RemoteViews` are modified
 directly. The bytecode manipulation is handled by a custom Gradle plugin that
 uses [a built-in AGP functionality][transform], along with some basic Java ASM.
 
-### Library publishing
+### Publishing
 
-Until everything gets published to the main repository services, the `library`
-and `plugin` modules will have to be built and published manually in order to be
-able to use this (unless you'd like to include the projects directly). If you
-would want to utilize your local Maven repository, all it takes is to run two
-predefined Gradle tasks in this project, and then to add a couple of
+For the time being, the `library` and `plugin` modules will have to be built and
+published manually in order to be able to use this (unless you'd like to include
+the projects directly). If you use a local Maven repository, all it takes is to
+run two predefined Gradle tasks in this project, and then to add a couple of
 `mavenLocal()` lines to your app's project.
 
 1. In Glancet, run `./gradlew :library:publishToMavenLocal` either through a
@@ -84,6 +83,14 @@ the following.
 
 ### App configuration
 
+Note that the library and plugin are currently being published using the hosting
+service's domain, so their ID – `io.github.gonodono.glancet`– is different than
+the Java package name used in code, `dev.gonodono.glancet`. The `io.github`
+identifiers are only ever used for the build dependencies.
+
+Also note that the main module is named `library` in the source code in order to
+avoid naming conflicts, but it's published as `glancet`.
+
 `libs.versions.toml`:
 
 ```toml
@@ -93,11 +100,11 @@ glancet = "0.0.1"
 
 [libraries]
 #…
-glancet-library = { module = "dev.gonodono.glancet:glancet", version.ref = "glancet" }
+glancet-library = { module = "io.github.gonodono.glancet:glancet", version.ref = "glancet" }
 
 [plugins]
 #…
-glancet-plugin = { id = "dev.gonodono.glancet", version.ref = "glancet" }
+glancet-plugin = { id = "io.github.gonodono.glancet", version.ref = "glancet" }
 ```
 
 Project's `build.gradle.kts`:
@@ -138,8 +145,8 @@ modules's [`build.gradle.kts` file][demo-build].
 ### Plugin logs
 
 For reference, the default settings will produce the following build logs for a
-debug variant. (A single log would probably be preferable, but this particular
-tool makes that a bit tricky.)
+debug variant. (A single log would probably be preferable, but the particular
+tool involved makes that a bit tricky.)
 
 ```
 Glancet has modified debug to enable remoteAdapter.
@@ -157,26 +164,22 @@ with the plugin settings.
 
 <br />
 
-> [!IMPORTANT]
-> Be sure to rebuild your project after adding the plugin or changing any of its
-> options.
+> [!IMPORTANT] Be sure to rebuild your project after adding the plugin or
+> changing any of its options.
 
 <br />
 
 ## GlanceModifier.remoteAdapter
 
-There's apparently a bug in `RemoteViews` that causes certain operations to
-fail on nested instances that are attached with `addView`/`addStableView` if
-those operations are performed directly on the nested ones. `setRemoteAdapter`
-is one of those that will fail in such a setup, and though simply moving the
-relevant operation to the parent will fix it, there's no way to do that with
-Glance's public API.
+`AdapterView`s don't work reliably in `AndroidRemoteViews` due to a bug in
+`RemoteViews` that causes `setRemoteAdapter` to fail on nested instances in
+certain setups. This can be avoided by simply moving the `setRemoteAdapter` call
+to the parent `RemoteViews`, but we don't have access to any of that here since
+it's all been abstracted away.
 
-The manner in which Glance pieces together its own composables manages to avoid
-this issue. When we use `AndroidRemoteViews`, however, we have to pass the whole
-shebang already assembled, and we have no access to the parent `RemoteViews`
-since that's all been abstracted away. `remoteAdapter` basically passes the
-adapter data to an injected function where it's attached to the parent instead.
+`GlanceModifier.remoteAdapter` works around this by passing the adapter data to
+a function that's been inserted into Glance where the parent `RemoteViews` can
+be accessed directly.
 
 ### Example
 
@@ -196,8 +199,7 @@ fun RemoteAdapterExample() {
     val serviceIntent: Intent = …
 
     // The state holds the Adapter data to apply later.
-    // There's also an overload for the RemoteCollectionItems version of
-    // setRemoteAdapter, as well as one that works with compat items.
+    // There are overloads for the RemoteCollectionItems versions too.
     val state = rememberStackViewState(R.id.stack_view, serviceIntent)
 
     // Order doesn't matter for the remoteAdapter call.
@@ -218,11 +220,11 @@ available for each type of `AdapterView` (not counting overloads):
 - `rememberStackViewState`
 - `rememberAdapterViewFlipperState`
 
-The separate functions are for clarity and ease of use, though there are really
-only two different types. The `ListView` and `GridView` ones return exactly the
-same thing, as do the `StackView` and `AdapterViewFlipper` versions. The
-difference between the two types is the scroll functions that each offers, which
-are covered below.
+These functions are all separate for clarity and ease of use, though there are
+really only two different types. The `ListView` and `GridView` ones return
+exactly the same thing, as do the `StackView` and `AdapterViewFlipper` versions.
+The difference between the two types is the scroll functions that each offers,
+which are covered below.
 
 Complete examples can be found in the `demo`'s [`RemoteAdapterWidgets`
 file][remote-adapter].
@@ -232,7 +234,8 @@ file][remote-adapter].
 This feature comes with a lint check that will show an error if the modifier is
 (part of) a direct argument to any composable that's not `AndroidRemoteViews`.
 The check is quite simplistic at the moment. It will not notice, for example, if
-you assign the modifier to a variable before passing it to the wrong composable.
+you assign the modifier to a variable before passing it to an invalid
+composable.
 
 ### Programmatic scroll
 
@@ -249,9 +252,8 @@ themselves.
 
 <br />
 
-> [!WARNING]
-> The programmatic scroll functions only work on API levels 31+, but there are
-> currently no annotations or lint warnings to indicate that.
+> [!WARNING] The programmatic scroll functions only work on API levels 31+, but
+> there are currently no annotations or lint warnings to indicate that.
 
 <br />
 
@@ -268,8 +270,8 @@ fact that Glance only ever performs full updates – i.e., no
 `partiallyUpdateAppWidget` – and 31 is the first version to preserve state like
 the scroll position across such updates.
 
-I'm not sure how to handle this, however, since `@RequiresApi` annotations are
-a bit unorthodox in Compose. It seems they prefer to mention in the docs that a
+I'm not sure how to handle this, however, since `@RequiresApi` annotations are a
+bit unorthodox in Compose. It seems they prefer to mention in the docs that a
 given feature doesn't work on certain versions, so that's how it's setup for
 this first release: the scroll and child functions simply don't do anything on
 API levels prior to 31, and it's noted in the relevant docs. I may add some lint
@@ -323,6 +325,7 @@ not tested any.
 |:-------------:|:-------:|:------:|
 |     1.1.1     |  0.0.1  | 0.0.1  |
 | 1.2.0-alpha01 |    "    |   "    |
+| 1.2.0-beta01  |    "    |   "    |
 
 <br />
 
@@ -391,6 +394,7 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+[glance]: https://developer.android.com/develop/ui/compose/glance
 [documentation]: https://gonodono.github.io/glancet
 [transform]: https://developer.android.com/build/releases/gradle-plugin-api-updates#support_for_transforming_bytecode
 [demo-build]: demo/build.gradle.kts

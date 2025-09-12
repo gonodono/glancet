@@ -1,17 +1,18 @@
 @file:Suppress("SpellCheckingInspection")
 
-package dev.gonodono.glancet.plugin
+package dev.gonodono.glancet.plugin.asm
 
+import dev.gonodono.glancet.plugin.GlancetPluginExtension
 import org.gradle.api.provider.Property
 import org.objectweb.asm.MethodVisitor
 
-internal data class Modification(
+internal data class MethodModification(
     val featureName: String,
-    private val featureSwitch: GlancetPluginExtension.() -> Property<Boolean>,
-    val methodVisitorFactory: MethodVisitorFactory,
-    private val targetClassFullyQualifiedName: String,
-    private val targetMethodBytecodeName: String,
-    private val targetMethodBytecodeDescriptor: String
+    val featureSwitch: GlancetPluginExtension.() -> Property<Boolean>,
+    val createMethodVisitor: MethodVisitorFactory,
+    val targetClassFullyQualifiedName: String,
+    val targetMethodBytecodeName: String,
+    val targetMethodBytecodeDescriptor: String
 ) {
     fun isMatch(className: String, extension: GlancetPluginExtension): Boolean =
         isTargetClass(className) && featureSwitch(extension).get()
@@ -19,18 +20,29 @@ internal data class Modification(
     fun isTargetClass(className: String): Boolean =
         targetClassFullyQualifiedName == className
 
-    fun isTargetMethod(name: String?, descriptor: String?): Boolean =
-        targetMethodBytecodeName == name &&
-                targetMethodBytecodeDescriptor == descriptor
+    fun visitor(
+        api: Int,
+        methodVisitor: MethodVisitor,
+        access: Int,
+        name: String?,
+        descriptor: String?
+    ): MethodVisitor =
+        if (targetMethodBytecodeName == name &&
+            targetMethodBytecodeDescriptor == descriptor
+        ) {
+            createMethodVisitor(api, methodVisitor, access, name, descriptor)
+        } else {
+            methodVisitor
+        }
 }
 
 private val RemoteAdapterModification =
-    Modification(
+    MethodModification(
         featureName =
             "remoteAdapter",
         featureSwitch =
             GlancetPluginExtension::remoteAdapter,
-        methodVisitorFactory =
+        createMethodVisitor =
             ::RemoteAdapterAdvice,
         targetClassFullyQualifiedName =
             "androidx.glance.appwidget.RemoteViewsTranslatorKt",
@@ -43,7 +55,7 @@ private val RemoteAdapterModification =
                     ")V"
     )
 
-private class RemoteAdapterAdvice(
+internal class RemoteAdapterAdvice(
     api: Int,
     methodVisitor: MethodVisitor,
     access: Int,
@@ -58,6 +70,18 @@ private class RemoteAdapterAdvice(
         // Landroidx/glance/appwidget/EmittableAndroidRemoteViews;
         visitVarInsn(ALOAD, 2)
         visitTypeInsn(CHECKCAST, "androidx/glance/Emittable")
+        visitMethodInsn(
+            /* opcodeAndSource = */
+            INVOKEINTERFACE,
+            /* owner = */
+            "androidx/glance/Emittable",
+            /* name = */
+            "getModifier",
+            /* descriptor = */
+            "()Landroidx/glance/GlanceModifier;",
+            /* isInterface = */
+            true
+        )
 
         visitMethodInsn(
             /* opcodeAndSource = */
@@ -68,7 +92,7 @@ private class RemoteAdapterAdvice(
             "setRemoteAdapterIfPresent",
             /* descriptor = */
             "(Landroid/widget/RemoteViews;" +
-                    "Landroidx/glance/Emittable;" +
+                    "Landroidx/glance/GlanceModifier;" +
                     ")V",
             /* isInterface = */
             false
@@ -77,12 +101,12 @@ private class RemoteAdapterAdvice(
 }
 
 private val LazyColumnCompatModification =
-    Modification(
+    MethodModification(
         featureName =
             "lazyColumnCompat",
         featureSwitch =
             GlancetPluginExtension::lazyColumnCompat,
-        methodVisitorFactory =
+        createMethodVisitor =
             ::LazyCompatAdvice,
         targetClassFullyQualifiedName =
             "androidx.glance.appwidget.translators.LazyListTranslatorKt",
@@ -97,12 +121,12 @@ private val LazyColumnCompatModification =
     )
 
 private val LazyVerticalGridCompatModification =
-    Modification(
+    MethodModification(
         featureName =
             "lazyVerticalGridCompat",
         featureSwitch =
             GlancetPluginExtension::lazyVerticalGridCompat,
-        methodVisitorFactory =
+        createMethodVisitor =
             ::LazyCompatAdvice,
         targetClassFullyQualifiedName =
             "androidx.glance.appwidget.translators.LazyVerticalGridTranslatorKt",
@@ -116,7 +140,7 @@ private val LazyVerticalGridCompatModification =
                     ")V"
     )
 
-private class LazyCompatAdvice(
+internal class LazyCompatAdvice(
     api: Int,
     methodVisitor: MethodVisitor,
     access: Int,
@@ -128,11 +152,23 @@ private class LazyCompatAdvice(
         // Landroid/widget/RemoteViews;
         visitVarInsn(ALOAD, 0)
 
-        // Landroidx/glance/appwidget/EmittableAndroidRemoteViews;
+        // Landroidx/glance/appwidget/lazy/EmittableLazy[Column|VerticalGrid];
         visitVarInsn(ALOAD, 2)
         visitTypeInsn(CHECKCAST, "androidx/glance/Emittable")
+        visitMethodInsn(
+            /* opcodeAndSource = */
+            INVOKEINTERFACE,
+            /* owner = */
+            "androidx/glance/Emittable",
+            /* name = */
+            "getModifier",
+            /* descriptor = */
+            "()Landroidx/glance/GlanceModifier;",
+            /* isInterface = */
+            true
+        )
 
-        // Ldev/gonodono/glancet/lazycompat/TranslationContext;
+        // Landroidx/glance/appwidget/InsertedViewInfo;
         visitVarInsn(ALOAD, 3)
         visitMethodInsn(
             /* opcodeAndSource = */
@@ -156,7 +192,7 @@ private class LazyCompatAdvice(
             "applyLazyCompatIfPresent",
             /* descriptor = */
             "(Landroid/widget/RemoteViews;" +
-                    "Landroidx/glance/Emittable;" +
+                    "Landroidx/glance/GlanceModifier;" +
                     "I" +
                     ")V",
             /* isInterface = */
@@ -165,7 +201,7 @@ private class LazyCompatAdvice(
     }
 }
 
-internal val Modifications: Set<Modification> =
+internal val Modifications: Set<MethodModification> =
     setOf(
         RemoteAdapterModification,
         LazyColumnCompatModification,

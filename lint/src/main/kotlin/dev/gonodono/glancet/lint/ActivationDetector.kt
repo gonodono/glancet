@@ -10,7 +10,7 @@ import com.android.tools.lint.detector.api.Severity
 import com.android.tools.lint.detector.api.SourceCodeScanner
 import com.intellij.psi.PsiMethod
 import dev.gonodono.glancet.lint.util.ActivationTargets
-import dev.gonodono.glancet.lint.util.LintSignalDirectory
+import dev.gonodono.glancet.lint.util.LintTokensDirectory
 import dev.gonodono.glancet.lint.util.isRunningInUnitTest
 import dev.gonodono.glancet.lint.util.isSameClassAs
 import dev.gonodono.glancet.lint.util.report
@@ -48,19 +48,19 @@ public class ActivationDetector : Detector(), SourceCodeScanner {
                 "test"
             }
 
-        val directory = File(buildDirectory, LintSignalDirectory)
+        val directory = File(buildDirectory, LintTokensDirectory)
         val featureName = target.name.uncapitalized()
         if (File(directory, "$variantName.$featureName").exists()) return
 
-        context.report(FeatureNotActivated, node, method)
+        context.report(GlancetFeatureNotActivated, node, method)
     }
 
     internal companion object {
 
-        val FeatureNotActivated: Issue =
+        val GlancetFeatureNotActivated: Issue =
             Issue.create(
                 id =
-                    "FeatureNotActivated",
+                    "GlancetFeatureNotActivated",
                 briefDescription =
                     "Missing Glancet plugin activation",
                 explanation =

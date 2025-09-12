@@ -1,18 +1,16 @@
-package dev.gonodono.glancet.plugin
+package dev.gonodono.glancet.plugin.asm
 
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.commons.AdviceAdapter
 
-internal fun interface MethodVisitorFactory {
-
-    fun createVisitor(
-        api: Int,
-        methodVisitor: MethodVisitor,
-        access: Int,
-        name: String?,
-        descriptor: String?
-    ): MethodVisitor
-}
+internal typealias MethodVisitorFactory =
+            (
+            api: Int,
+            methodVisitor: MethodVisitor,
+            access: Int,
+            name: String?,
+            descriptor: String?
+        ) -> MethodVisitor
 
 internal abstract class AfterAdvice(
     api: Int,

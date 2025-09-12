@@ -2,11 +2,10 @@ package dev.gonodono.glancet.plugin
 
 import com.android.build.api.instrumentation.InstrumentationScope
 import com.android.build.api.variant.AndroidComponentsExtension
+import dev.gonodono.glancet.plugin.asm.GlanceClassVisitor
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.file.Directory
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.internal.extensions.stdlib.capitalized
 import java.io.File
 import java.io.FileNotFoundException
@@ -18,7 +17,7 @@ import java.io.FileNotFoundException
 public class GlancetPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
-        project.checkIsAndroidAppOrLibrary()
+        project.checkIsAndroidApplicationOrLibrary()
 
         val extension =
             project.extensions
@@ -30,62 +29,74 @@ public class GlancetPlugin : Plugin<Project> {
                     suppressPluginLogs.convention(false)
                 }
 
-        project.applyGlancetPlugin(extension)
+        project.configureTransformations(extension)
     }
 }
 
-private fun Project.checkIsAndroidAppOrLibrary() {
+internal fun Project.checkIsAndroidApplicationOrLibrary() {
     if (this.pluginManager.hasPlugin("com.android.application")) return
     if (this.pluginManager.hasPlugin("com.android.library")) return
-    error("The Glancet plugin can be used only with an Android app or library.")
+    error(MissingAndroidPluginErrorMessage)
 }
 
-private fun Project.applyGlancetPlugin(extension: GlancetPluginExtension) =
+internal const val MissingAndroidPluginErrorMessage =
+    "The Glancet plugin can be used only in an Android application or library."
+
+internal fun Project.configureTransformations(extension: GlancetPluginExtension) =
     this.extensions
         .getByType(AndroidComponentsExtension::class.java)
         .onVariants { variant ->
+
             variant.instrumentation.transformClassesWith(
-                GlancetClassVisitor.Factory::class.java,
+                GlanceClassVisitor.Factory::class.java,
                 InstrumentationScope.ALL
             ) { parameters ->
                 parameters.extension.set(extension)
                 parameters.variantName.set(variant.name)
             }
 
-            this.configureLintSignalTask(variant.name)
+            // Not currently necessary; no stack increase or branch or anything.
+            // variant.instrumentation.setAsmFramesComputationMode(
+            //     FramesComputationMode.COMPUTE_FRAMES_FOR_INSTRUMENTED_METHODS
+            // )
+
+            // Must wait until AGP creates the variants' assemble tasks.
+            this.afterEvaluate { configureLintTokensTask(variant.name) }
         }
 
-private fun Project.configureLintSignalTask(variantName: String) =
-    this.afterEvaluate {
-        val suffix = variantName.capitalized()
+internal fun Project.configureLintTokensTask(variantName: String) {
+    val suffix = variantName.capitalized()
 
-        val glancet =
-            this.extensions.getByType(GlancetPluginExtension::class.java)
+    val extension =
+        extensions.getByType(GlancetPluginExtension::class.java)
 
-        val task =
-            this.tasks.register("generateLintSignal$suffix") {
-                val directory = layout.buildDirectory.dir(LintSignalDirectory)
-                doLast { updateSignalFiles(glancet, directory, variantName) }
-            }
+    val tokensTask =
+        tasks.register("updateGlancetLintTokens$suffix") {
+            val buildDir = project.layout.buildDirectory
+            val tokensDir = buildDir.dir(LintTokensDirectory).get().asFile
+            doLast { updateLintTokens(tokensDir, variantName, extension) }
+        }
 
-        this.tasks.getByName("assemble$suffix").finalizedBy(task)
-    }
+    val assembleTask = project.tasks.getByName("assemble$suffix")
+    tokensTask.configure { dependsOn(assembleTask) }
+    assembleTask.finalizedBy(tokensTask)
+}
 
-private fun updateSignalFiles(
-    glancet: GlancetPluginExtension,
-    directory: Provider<Directory>,
-    variantName: String
+internal fun updateLintTokens(
+    directory: File,
+    variantName: String,
+    extension: GlancetPluginExtension
 ) {
-    val dir = directory.get().asFile.apply { mkdirs() }
+    directory.mkdirs()
 
-    fun updateSignal(featureName: String, activated: Property<Boolean>) {
-        val file = File(dir, "$variantName.$featureName")
+    fun updateToken(featureName: String, activated: Property<Boolean>) {
+        val file = File(directory, "$variantName.$featureName")
         if (activated.get()) file.writeText("active") else file.deleteIfExists()
     }
 
-    updateSignal("remoteAdapter", glancet.remoteAdapter)
-    updateSignal("lazyColumnCompat", glancet.lazyColumnCompat)
-    updateSignal("lazyVerticalGridCompat", glancet.lazyVerticalGridCompat)
+    updateToken("remoteAdapter", extension.remoteAdapter)
+    updateToken("lazyColumnCompat", extension.lazyColumnCompat)
+    updateToken("lazyVerticalGridCompat", extension.lazyVerticalGridCompat)
 }
 
 private fun File.deleteIfExists() =
@@ -95,4 +106,4 @@ private fun File.deleteIfExists() =
         // ignore
     }
 
-private const val LintSignalDirectory = "outputs/glancet/"
+internal const val LintTokensDirectory = "outputs/glancet/"
