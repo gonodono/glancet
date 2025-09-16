@@ -37,7 +37,7 @@ Tools and extended composables for [Glance app widgets][glance] on Android
 The library accomplishes its effects by slightly altering Glance's bytecode to
 insert calls to local code where the underlying `RemoteViews` are modified
 directly. The bytecode manipulation is handled by a custom Gradle plugin that
-uses [a built-in AGP functionality][transform], along with some basic Java ASM.
+uses [a built-in AGP functionality][transform] along with some basic Java ASM.
 
 ### Publishing
 
@@ -164,8 +164,9 @@ with the plugin settings.
 
 <br />
 
-> [!IMPORTANT] Be sure to rebuild your project after adding the plugin or
-> changing any of its options.
+> [!IMPORTANT]
+> Be sure to rebuild your project after adding the plugin or changing any of its
+> options.
 
 <br />
 
@@ -173,9 +174,9 @@ with the plugin settings.
 
 `AdapterView`s don't work reliably in `AndroidRemoteViews` due to a bug in
 `RemoteViews` that causes `setRemoteAdapter` to fail on nested instances in
-certain setups. This can be avoided by simply moving the `setRemoteAdapter` call
-to the parent `RemoteViews`, but we don't have access to any of that here since
-it's all been abstracted away.
+certain host setups. This can be avoided by simply moving the `setRemoteAdapter`
+call to the parent `RemoteViews`, but we don't have access to any of that here
+since it's all been abstracted away.
 
 `GlanceModifier.remoteAdapter` works around this by passing the adapter data to
 a function that's been inserted into Glance where the parent `RemoteViews` can
@@ -252,8 +253,9 @@ themselves.
 
 <br />
 
-> [!WARNING] The programmatic scroll functions only work on API levels 31+, but
-> there are currently no annotations or lint warnings to indicate that.
+> [!WARNING]
+> The programmatic scroll functions only work on API levels 31+, but there are
+> currently no annotations or lint warnings to indicate that.
 
 <br />
 
