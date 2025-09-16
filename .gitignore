@@ -9,6 +9,7 @@
 /library
 /lint
 /plugin
+/tests
 /build.gradle.kts
 /gradle.properties
 /gradlew

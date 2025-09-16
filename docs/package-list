@@ -1,0 +1,8 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+
+module:glancet
+dev.gonodono.glancet.lazycompat
+dev.gonodono.glancet.remoteadapter
+module:plugin
+dev.gonodono.glancet.plugin
