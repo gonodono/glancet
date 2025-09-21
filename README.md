@@ -1,18 +1,16 @@
-# Glancet
+# Glimpse
 
-Tools and extended composables for [Glance app widgets][glance] on Android
+Tools and extended composables for [Glance app widgets on Android][glance]
 
 <br />
 
-**Current Features:**
-
-- `GlanceModifier.remoteAdapter`
+- **GlanceModifier.remoteAdapter**
 
   Allows the use of `AdapterView`s with `AndroidRemoteViews`, giving us access
   to `StackView` and `AdapterViewFlipper`, analogs for which Glance doesn't yet
   have.
 
-- `LazyColumnCompat` & `LazyVerticalGridCompat`
+- **ScrollableLazyColumn & ScrollableLazyVerticalGrid**
 
   These extended composables add a state parameter that gives access to
   `AdapterView`'s `smoothScrollToPosition` and `smoothScrollByOffset` methods,
@@ -25,7 +23,7 @@ Tools and extended composables for [Glance app widgets][glance] on Android
 
 - [**Setup**](#setup)
 - [**GlanceModifier.remoteAdapter**](#glancemodifierremoteadapter)
-- [**LazyColumnCompat & LazyVerticalGridCompat**](#lazycolumncompat--lazyverticalgridcompat)
+- [**ScrollableLazyColumn & ScrollableLazyVerticalGrid**](#scrollablelazycolumn--scrollablelazyverticalgrid)
 - [**Version map**](#version-map)
 - [**Notes**](#notes)
 - [**Documentation ↗**][documentation]
@@ -47,12 +45,12 @@ the projects directly). If you use a local Maven repository, all it takes is to
 run two predefined Gradle tasks in this project, and then to add a couple of
 `mavenLocal()` lines to your app's project.
 
-1. In Glancet, run `./gradlew :library:publishToMavenLocal` either through a
+1. In Glimpse, run `./gradlew :library:publishToMavenLocal` either through a
    terminal, or from the Gradle task window in Android Studio. (Or, if you're
    reading this in your IDE and that command renders as an action, just run it
    from here.)
 
-2. In Glancet again, run `./gradlew :plugin:publishToMavenLocal` the same way.
+2. In Glimpse again, run `./gradlew :plugin:publishToMavenLocal` the same way.
 
 3. In your app project's `settings.gradle.kts`, assuming a modern setup, add
    `mavenLocal()` to the `repositories {}` blocks that are inside both the
@@ -84,27 +82,27 @@ the following.
 ### App configuration
 
 Note that the library and plugin are currently being published using the hosting
-service's domain, so their ID – `io.github.gonodono.glancet`– is different than
-the Java package name used in code, `dev.gonodono.glancet`. The `io.github`
+service's domain, so their ID – `io.github.gonodono.glimpse`– is different than
+the Java package name used in code, `dev.gonodono.glimpse`. The `io.github`
 identifiers are only ever used for the build dependencies.
 
 Also note that the main module is named `library` in the source code in order to
-avoid naming conflicts, but it's published as `glancet`.
+avoid naming conflicts, but it's published as `glimpse`.
 
 `libs.versions.toml`:
 
 ```toml
 [versions]
 #…
-glancet = "0.0.1"
+glimpse = "0.0.1"
 
 [libraries]
 #…
-glancet-library = { module = "io.github.gonodono.glancet:glancet", version.ref = "glancet" }
+glimpse-library = { module = "io.github.gonodono.glimpse:glimpse", version.ref = "glimpse" }
 
 [plugins]
 #…
-glancet-plugin = { id = "io.github.gonodono.glancet", version.ref = "glancet" }
+glimpse-plugin = { id = "io.github.gonodono.glimpse", version.ref = "glimpse" }
 ```
 
 Project's `build.gradle.kts`:
@@ -112,7 +110,7 @@ Project's `build.gradle.kts`:
 ```kotlin
 plugins {
     …
-    alias(libs.plugins.glancet.plugin) apply false
+    alias(libs.plugins.glimpse.plugin) apply false
 }
 ```
 
@@ -121,12 +119,12 @@ App's `build.gradle.kts`:
 ```kotlin
 plugins {
     …
-    alias(libs.plugins.glancet.plugin)
+    alias(libs.plugins.glimpse.plugin)
 }
 
 …
 
-glancet {
+glimpse {
     suppressPluginLogs = true
 }
 
@@ -134,11 +132,11 @@ glancet {
 
 dependencies {
     …
-    implementation(libs.glancet.library)
+    implementation(libs.glimpse.library)
 }
 ```
 
-The short `glancet {}` example above shows how to disable the logs, and there's
+The short `glimpse {}` example above shows how to disable the logs, and there's
 a full example with all available options and their default values in the `demo`
 modules's [`build.gradle.kts` file][demo-build].
 
@@ -149,9 +147,9 @@ debug variant. (A single log would probably be preferable, but the particular
 tool involved makes that a bit tricky.)
 
 ```
-Glancet has modified debug to enable remoteAdapter.
-Glancet has modified debug to enable lazyColumnCompat.
-Glancet has modified debug to enable lazyVerticalGridCompat.
+Glimpse has modified debug to enable remoteAdapter.
+Glimpse has modified debug to enable scrollableLazyColumn.
+Glimpse has modified debug to enable scrollableLazyVerticalGrid.
 ```
 
 ### Lint check
@@ -199,7 +197,7 @@ fun RemoteAdapterExample() {
     // Nothing special with this, a regular Intent for a RemoteViewsService.
     val serviceIntent: Intent = …
 
-    // The state holds the Adapter data to apply later.
+    // The state holds the adapter data to apply later.
     // There are overloads for the RemoteCollectionItems versions too.
     val state = rememberStackViewState(R.id.stack_view, serviceIntent)
 
@@ -259,7 +257,7 @@ themselves.
 
 <br />
 
-## LazyColumnCompat & LazyVerticalGridCompat
+## ScrollableLazyColumn & ScrollableLazyVerticalGrid
 
 Each of these simply adds to the base function a single parameter for a "state"
 interface that exposes the `smoothScrollToPosition` and `smoothScrollByOffset`
@@ -283,14 +281,14 @@ checks in the future, or it may end up with some `@RequiresApi`s.
 
 ```kotlin
 @Composable
-fun LazyColumnCompatExample() {
+fun ScrollableLazyColumnExample() {
 
   Column(modifier = GlanceModifier.fillMaxSize()) {
 
         // No setup or data for this; it's just exposing some command functions.
-        val state = rememberLazyCompatState()
+        val state = rememberScrollableLazyState()
 
-        LazyColumnCompat(
+        ScrollableLazyColumn(
             state = state,
             modifier = GlanceModifier
                 .fillMaxWidth
@@ -310,10 +308,10 @@ fun LazyColumnCompatExample() {
 }
 ```
 
-Both of the compat composables use the same `rememberLazyCompatState` function
+Both of the compat composables use the same `rememberScrollableLazyState` function
 and state type.
 
-Complete examples can be found in the `demo` module's [`LazyCompatWidgets`
+Complete examples can be found in the `demo` module's [`ScrollableLazyWidgets`
 file][lazy-compat].
 
 <br />
@@ -323,7 +321,7 @@ file][lazy-compat].
 This first release probably works with some older Glance versions too, but I've
 not tested any.
 
-|    Glance     | Glancet | Plugin |
+|    Glance     | Glimpse | Plugin |
 |:-------------:|:-------:|:------:|
 |     1.1.1     |  0.0.1  | 0.0.1  |
 | 1.2.0-alpha01 |    "    |   "    |
@@ -333,13 +331,18 @@ not tested any.
 
 ## Notes
 
+- This project used to be called Glancet, but I've abruptly changed it before
+  publishing the first release. In addition to the relevant package and build
+  changes, I've also renamed the Composables. If you were using this already,
+  my apologies.
+
 - All of the current features involve custom `GlanceModifier` implementations,
   and Glance prints a warning log anytime it encounters one that's not its own.
   For example, in a build without obfuscation:
 
   ```
-  Unknown modifier 'dev.gonodono.glancet.lazycompat.LazyCompatModifier@f751447', nothing done.
-  Unknown modifier 'dev.gonodono.glancet.remoteadapter.RemoteAdapterModifier@bc48ce6', nothing done.
+  Unknown modifier 'dev.gonodono.glimpse.remoteadapter.RemoteAdapterModifier@bc48ce6', nothing done.
+  Unknown modifier 'dev.gonodono.glimpse.scrollablelazy.ScrollableLazyModifier@f751447', nothing done.
   ```
 
   These might be surgically removed or corrected in a future version of this
@@ -397,9 +400,9 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 [glance]: https://developer.android.com/develop/ui/compose/glance
-[documentation]: https://gonodono.github.io/glancet
+[documentation]: https://gonodono.github.io/glimpse
 [transform]: https://developer.android.com/build/releases/gradle-plugin-api-updates#support_for_transforming_bytecode
 [demo-build]: demo/build.gradle.kts
-[remote-adapter]: demo/src/main/kotlin/dev/gonodono/glancet/demo/RemoteAdapterWidgets.kt
-[lazy-compat]: demo/src/main/kotlin/dev/gonodono/glancet/demo/LazyCompatWidgets.kt
-[issues]: https://github.com/gonodono/glancet/issues
+[remote-adapter]: demo/src/main/kotlin/dev/gonodono/glimpse/demo/RemoteAdapterWidgets.kt
+[lazy-compat]: demo/src/main/kotlin/dev/gonodono/glimpse/demo/ScrollableLazyWidgets.kt
+[issues]: https://github.com/gonodono/glimpse/issues

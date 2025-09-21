@@ -16,7 +16,7 @@
         </activity>
 
 
-        <!-- Remote Adapter Widgets -->
+        <!-- RemoteAdapter Widgets -->
 
         <receiver
             android:name=".ListViewWidgetReceiver"
@@ -73,10 +73,10 @@
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
 
-        <!-- Lazy Compat Widgets -->
+        <!-- ScrollableLazy Widgets -->
 
         <receiver
-            android:name=".LazyColumnCompatWidgetReceiver"
+            android:name=".ScrollableLazyColumnWidgetReceiver"
             android:exported="true"
             android:label="@string/lazy_column_compat">
             <intent-filter>
@@ -88,7 +88,7 @@
         </receiver>
 
         <receiver
-            android:name=".LazyVerticalGridCompatWidgetReceiver"
+            android:name=".ScrollableLazyVerticalGridWidgetReceiver"
             android:exported="true"
             android:label="@string/lazy_vertical_grid_compat">
             <intent-filter>

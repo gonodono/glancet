@@ -27,7 +27,7 @@ dependencyResolutionManagement {
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-rootProject.name = "glancet"
+rootProject.name = "glimpse"
 
 include(":library")
 include(":tests")

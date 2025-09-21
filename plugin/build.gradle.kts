@@ -1,5 +1,6 @@
 import com.vanniktech.maven.publish.GradlePublishPlugin
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.time.Year
 import java.util.Properties
 
 plugins {
@@ -36,11 +37,11 @@ gradlePlugin {
     vcsUrl = rootProperties.requireProperty("repository.git")
 
     plugins {
-        register("glancet") {
+        register("glimpse") {
             id = project.group.toString()
-            implementationClass = "dev.gonodono.glancet.plugin.GlancetPlugin"
-            displayName = "Glancet Gradle plugin"
-            description = "A Gradle plugin required by the Glancet library."
+            implementationClass = "dev.gonodono.glimpse.plugin.GlimpsePlugin"
+            displayName = "Glimpse Gradle plugin"
+            description = "A Gradle plugin required by the Glimpse library."
             tags = listOf("android", "android-library")
         }
     }
@@ -60,21 +61,21 @@ mavenPublishing {
 
     pom {
         name =
-            "Glancet Gradle plugin"
+            "Glimpse Gradle plugin"
         description =
-            "A Gradle plugin required by the Glancet library."
+            "A Gradle plugin required by the Glimpse library."
         url =
-            "https://github.com/gonodono/glancet/tree/main/plugin"
+            "https://github.com/gonodono/glimpse/tree/main/plugin"
         inceptionYear =
             "2025"
 
         scm {
             url =
-                "https://github.com/gonodono/glancet"
+                "https://github.com/gonodono/glimpse"
             connection =
-                "scm:git:git://github.com/gonodono/glancet.git"
+                "scm:git:git://github.com/gonodono/glimpse.git"
             developerConnection =
-                "scm:git:ssh://github.com/gonodono/glancet.git"
+                "scm:git:ssh://github.com/gonodono/glimpse.git"
         }
         licenses {
             name = "The MIT License"
@@ -92,11 +93,24 @@ mavenPublishing {
 
 dokka {
     modulePath = rootProject.name + project.path.replace(":", "/")
-    dokkaSourceSets.configureEach { includes.from("docs.module.md") }
 
-    dokkaPublications {
-        html {
-            outputDirectory = rootProject.layout.buildDirectory.dir("docs")
+    dokkaSourceSets.configureEach {
+        includes.from("docs.module.md")
+
+        pluginsConfiguration {
+            html {
+                homepageLink = rootProperties.requireProperty("repository.url")
+                footerMessage =
+                    "© ${Year.now().value} " +
+                            rootProperties.requireProperty("developer.name")
+            }
+        }
+
+        sourceLink {
+            localDirectory = project.layout.projectDirectory.dir("src")
+            val repoUrl = rootProperties.requireProperty("repository.url")
+            remoteUrl = uri("$repoUrl/tree/main/${project.name}/src")
+            remoteLineSuffix = "#L"
         }
     }
 }

@@ -4,25 +4,25 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.glancet)
+    alias(libs.plugins.glimpse)
 }
 
 // Example of using the plugin extension.
 // The values given below are the defaults.
 // Be sure to rebuild after any changes.
-glancet {
+glimpse {
     remoteAdapter = true
-    lazyColumnCompat = true
-    lazyVerticalGridCompat = true
+    scrollableLazyColumn = true
+    scrollableLazyVerticalGrid = true
     suppressPluginLogs = false
 }
 
 android {
-    namespace = "dev.gonodono.glancet.demo"
+    namespace = "dev.gonodono.glimpse.demo"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "dev.gonodono.glancet.demo"
+        applicationId = "dev.gonodono.glimpse.demo"
         minSdk = 21
         targetSdk = 36
         versionCode = 1

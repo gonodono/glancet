@@ -7,8 +7,8 @@ plugins {
 }
 
 dependencies {
-    dokka(libs.glancet.library)
-    dokka(libs.glancet.plugin)
+    dokka(libs.glimpse.library)
+    dokka(libs.glimpse.plugin)
     dokkaHtmlPlugin(libs.dokka.versioning.plugin)
 }
 
@@ -19,7 +19,7 @@ project.group = rootProperties.requireProperty("group.id")
 project.version = rootProperties.requireProperty("library.version")
 
 dokka {
-    moduleName = "Glancet"
+    moduleName = "Glimpse"
     basePublicationsDirectory = project.layout.projectDirectory
 
     pluginsConfiguration {

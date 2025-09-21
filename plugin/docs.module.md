@@ -9,13 +9,13 @@ options along with their default values.
 ```kotlin
 plugins {
     …
-    id("io.github.gonodono.glancet") version "…"
+    id("io.github.gonodono.glimpse") version "…"
 }
 
-glancet {
+glimpse {
     remoteAdapter = true
-    lazyColumnCompat = true
-    lazyVerticalGridCompat = true
+    scrollableLazyColumn = true
+    scrollableLazyVerticalGrid = true
     suppressPluginLogs = false
 }
 

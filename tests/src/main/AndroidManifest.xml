@@ -3,7 +3,7 @@
 
     <application
         android:icon="@android:drawable/sym_def_app_icon"
-        android:label="Glancet library test"
+        android:label="Glimpse library test"
         android:theme="@style/android:Theme.Material.Light.NoActionBar">
 
         <activity android:name=".AppWidgetHostActivity" />
@@ -31,7 +31,7 @@
         </receiver>
 
         <receiver
-            android:name=".LazyCompatWidget$Receiver"
+            android:name=".ScrollableLazyWidget$Receiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

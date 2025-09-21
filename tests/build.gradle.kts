@@ -4,15 +4,15 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.glancet)
+    alias(libs.plugins.glimpse)
 }
 
 android {
-    namespace = "dev.gonodono.glancet.tests"
+    namespace = "dev.gonodono.glimpse.tests"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "dev.gonodono.glancet.tests"
+        applicationId = "dev.gonodono.glimpse.tests"
         minSdk = 23
         targetSdk = 36
         versionCode = 1
@@ -49,10 +49,9 @@ dependencies {
     //noinspection UseTomlInstead
     implementation("androidx.glance:glance-appwidget:1.2.0-beta01")
 
-    implementation(libs.androidx.remoteviews)
-
     implementation(libs.androidx.core)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.remoteviews)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

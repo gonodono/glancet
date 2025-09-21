@@ -63,8 +63,8 @@ lint-tests = { module = "com.android.tools.lint:lint-tests", version.ref = "lint
 
 # Docs
 dokka-versioning-plugin = { module = "org.jetbrains.dokka:versioning-plugin", version.ref = "dokka" }
-glancet-library = { module = "io.github.gonodono.glancet:library" }
-glancet-plugin = { module = "io.github.gonodono.glancet:plugin" }
+glimpse-library = { module = "io.github.gonodono.glimpse:library" }
+glimpse-plugin = { module = "io.github.gonodono.glimpse:plugin" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -79,4 +79,4 @@ vanniktech-publish = { id = "com.vanniktech.maven.publish", version.ref = "vanni
 gradle-publish = { id = "com.gradle.plugin-publish", version.ref = "gradle" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 
-glancet = { id = "io.github.gonodono.glancet" }
+glimpse = { id = "io.github.gonodono.glimpse" }

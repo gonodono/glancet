@@ -1,3 +1,3 @@
-# Module glancet
+# Module glimpse
 
 The main library.
