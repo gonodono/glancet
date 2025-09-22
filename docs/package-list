@@ -1,8 +1,8 @@
 $dokka.format:html-v1
 $dokka.linkExtension:html
 
-module:glancet
-dev.gonodono.glancet.lazycompat
-dev.gonodono.glancet.remoteadapter
+module:glimpse
+dev.gonodono.glimpse.remoteadapter
+dev.gonodono.glimpse.scrollablelazy
 module:plugin
-dev.gonodono.glancet.plugin
+dev.gonodono.glimpse.plugin

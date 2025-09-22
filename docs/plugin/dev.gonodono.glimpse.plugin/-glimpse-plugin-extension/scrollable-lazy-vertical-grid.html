@@ -2,8 +2,8 @@
 <html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
-    <title>plugin</title>
-<link href="../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../";</script>
+    <title>scrollableLazyVerticalGrid</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
     <script>document.documentElement.classList.replace("no-js","js");</script>
     <script>const storage = localStorage.getItem("dokka-dark-mode")
     if (storage == null) {
@@ -19,31 +19,31 @@
     }
     </script>
 <script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
-<script type="text/javascript" src="../scripts/sourceset_dependencies.js" async></script>
-<link href="../styles/style.css" rel="Stylesheet">
-<link href="../styles/main.css" rel="Stylesheet">
-<link href="../styles/prism.css" rel="Stylesheet">
-<link href="../styles/logo-styles.css" rel="Stylesheet">
-<link href="../styles/font-jb-sans-auto.css" rel="Stylesheet">
-<link href="../ui-kit/ui-kit.min.css" rel="Stylesheet">
-<script type="text/javascript" src="../scripts/clipboard.js" async></script>
-<script type="text/javascript" src="../scripts/navigation-loader.js" async></script>
-<script type="text/javascript" src="../scripts/platform-content-handler.js" async></script>
-<script type="text/javascript" src="../scripts/main.js" defer></script>
-<script type="text/javascript" src="../scripts/prism.js" async></script>
-<script type="text/javascript" src="../ui-kit/ui-kit.min.js" defer></script>
-<script type="text/javascript" src="../scripts/symbol-parameters-wrapper_deferred.js" defer></script>
-<link href="../styles/multimodule.css" rel="Stylesheet"></head>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script>
+<link href="../../../styles/multimodule.css" rel="Stylesheet"></head>
 <body>
     <div class="root">
     <nav class="navigation theme-dark" id="navigation-wrapper">
-<a class="library-name--link" href="../index.html">
+<a class="library-name--link" href="../../../index.html">
                     Glimpse
             </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
         </button>
         <div class="navigation-controls--break ui-kit_mobile-only"></div>
         <div class="library-version" id="library-version">
-<dokka-template-command data="{&quot;@class&quot;:&quot;org.jetbrains.dokka.base.templating.ReplaceVersionsCommand&quot;,&quot;location&quot;:&quot;index.html&quot;}">0.0.1</dokka-template-command>        </div>
+<dokka-template-command data="{&quot;@class&quot;:&quot;org.jetbrains.dokka.base.templating.ReplaceVersionsCommand&quot;,&quot;location&quot;:&quot;dev.gonodono.glimpse.plugin/-glimpse-plugin-extension/scrollable-lazy-vertical-grid.html&quot;}">0.0.1</dokka-template-command>        </div>
         <div class="navigation-controls">
         <div class="filter-section filter-section_loading" id="filter-section">
                 <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":/main">jvm</button>
@@ -92,32 +92,12 @@
                 </div>
             </div>
             <div id="main">
-<div class="main-content" id="content" pageids="plugin::////PointingToDeclaration//-251573632">
-  <div class="breadcrumbs"></div>
+<div class="main-content" data-page-type="member" id="content" pageids="plugin::dev.gonodono.glimpse.plugin/GlimpsePluginExtension/scrollableLazyVerticalGrid/#/PointingToDeclaration//-251573632">
+  <div class="breadcrumbs"><a href="../../index.html">plugin</a><span class="delimiter">/</span><a href="../index.html">dev.gonodono.glimpse.plugin</a><span class="delimiter">/</span><a href="index.html">GlimpsePluginExtension</a><span class="delimiter">/</span><span class="current">scrollableLazyVerticalGrid</span></div>
   <div class="cover ">
-    <h1 class="cover"><span><span>plugin</span></span></h1>
-    <div class="platform-hinted UnderCoverText" data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":/main"><p class="paragraph">A Gradle plugin required for activation of the library's various features.</p><p class="paragraph">The plugin is applied and configured in the <code class="lang-kotlin">build.gradle[.kts]</code> file for an Android app or library. The following (<code class="lang-kotlin">kts</code>) example shows all of the available options along with their default values.</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">plugins {<br>    …<br>    id("io.github.gonodono.glimpse") version "…"<br>}<br><br>glimpse {<br>    remoteAdapter = true<br>    scrollableLazyColumn = true<br>    scrollableLazyVerticalGrid = true<br>    suppressPluginLogs = false<br>}<br><br>android {<br>    …<br>}<br><br>…</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph">The feature flags are mainly meant for testing and debugging, but you may also wish to disable features in order to avoid unnecessary bytecode modifications for any that you're not using.</p></div></div>
+    <h1 class="cover"><span>scrollable</span><wbr><span>Lazy</span><wbr><span>Vertical</span><wbr><span><span>Grid</span></span></h1>
   </div>
-  <h2 class="">Packages</h2>
-  <div class="table"><a data-name="-1400969014%2FPackages%2F-251573632" anchor-label="dev.gonodono.glimpse.plugin" id="-1400969014%2FPackages%2F-251573632" data-filterable-set=":/main"></a>
-    <div class="table-row" data-filterable-current=":/main" data-filterable-set=":/main">
-      <div>
-        <div class="main-subrow ">
-          <div class=""><span class="inline-flex">
-              <div><a href="dev.gonodono.glimpse.plugin/index.html">dev.gonodono.glimpse.plugin</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1400969014%2FPackages%2F-251573632"></span>
-                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-              </span></span></div>
-          <div class="pull-right">
-            <div class="platform-tags no-gutters">
-              <div class="platform-tag jvm-like">jvm</div>
-            </div>
-          </div>
-        </div>
-        <div></div>
-      </div>
-    </div>
-  </div>
+  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">val </span><a href="scrollable-lazy-vertical-grid.html">scrollableLazyVerticalGrid</a><span class="token operator">: </span><span data-unresolved-link="org.gradle.api.provider/Property///PointingToDeclaration/">Property</span><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span><span class="clearfix"><span class="floating-right">(<a href="https://github.com/gonodono/glimpse/tree/main/plugin/src/main/kotlin/dev/gonodono/glimpse/plugin/GlimpsePluginExtension.kt#L29">source</a>)</span></span></div><p class="paragraph">The activation flag for the <code class="lang-kotlin">ScrollableLazyVerticalGrid</code> Composable.</p><p class="paragraph">The default value is <code class="lang-kotlin">true</code>.</p></div></div>
 </div>
     <div class="footer">
         <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
