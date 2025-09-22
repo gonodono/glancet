@@ -5,8 +5,6 @@ Tools and extended composables for [Glance app widgets on Android][glance].
 The current features comprise `AdapterView` workarounds and enhancements for
 which Glance has no corresponding functionalities.
 
-<br />
-
 - **GlanceModifier.remoteAdapter**
 
   A modifier that allows the use of `AdapterView`s with `AndroidRemoteViews`,
@@ -40,7 +38,7 @@ call to the parent `RemoteViews`, but we don't have access to any of that in
 Glance since it's all been abstracted away.
 
 `GlanceModifier.remoteAdapter` works around this by passing the adapter data to
-a function that's been inserted into Glance's bytecode where the parent
+a function that's been injected into Glance's bytecode where the parent
 `RemoteViews` can be accessed and modified directly.
 
 ### Example
@@ -101,16 +99,18 @@ composable.
 
 ### Programmatic scroll
 
+**<sup>(API levels 31+)</sup>**
+
 As mentioned, `remoteAdapter` states also provide access to the smooth scroll
 functions, which are used by `ListView` and `GridView`. `StackView` and
 `AdapterViewFlipper` are actually a different type of `AdapterView`, and their
 state interface offers `setDisplayedChild`, `showNext`, and `showPrevious`
 instead.
 
-Both types have the same API restrictions as described in the next section.
-Please note that those restrictions mean that `AdapterViewFlipper` is
-essentially useless on API levels < 31, since the user can't scroll it
-themselves.
+Both types have the same API level restrictions and fallback behavior as
+described in the next section. Please note that those restrictions mean that
+`AdapterViewFlipper` is essentially useless on API levels < 31, since the user
+can't scroll it themselves.
 
 <br />
 
@@ -122,11 +122,11 @@ themselves.
 
 ## ScrollableLazyColumn & ScrollableLazyVerticalGrid
 
+**<sup>(API levels 31+)</sup>**
+
 Each of these simply adds to the base function a single parameter for a "state"
 interface that exposes the `smoothScrollToPosition` and `smoothScrollByOffset`
 functions.
-
-### API restrictions
 
 Unfortunately these functions only work on API levels 31 and above, due to the
 fact that Glance only ever performs full updates – i.e., no
@@ -288,15 +288,19 @@ not tested any.
 | 1.2.0-alpha01 |    "    |   "    |
 | 1.2.0-beta01  |    "    |   "    |
 
+<br />
+
 > [!WARNING]
 > Currently, these mappings are not enforced in any way. It is up to the user to
-> ensure the correct versions.
+> ensure correct corresponding versions. There is no guaranteed behavior for
+> mismatches; failure might occur during build or at runtime, it may be an
+> explicit Exception or it could be silent and cause delayed issues, etc.
 
 <br />
 
 ## Notes
 
-- This project used to be called Glancet, but I've abruptly changed it before
+- This project used to be called Glancet, but I abruptly changed it before
   publishing the first release. In addition to the relevant package and build
   changes, I've also renamed the composables. If you were using this already,
   my apologies.
