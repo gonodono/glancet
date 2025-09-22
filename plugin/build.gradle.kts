@@ -78,14 +78,16 @@ mavenPublishing {
                 "scm:git:ssh://github.com/gonodono/glimpse.git"
         }
         licenses {
-            name = "The MIT License"
-            url = "https://opensource.org/license/mit"
+            license {
+                name = "The MIT License"
+                url = "https://opensource.org/license/mit"
+            }
         }
         developers {
             developer {
                 id = "gonodono"
                 name = "Mike M."
-                email = "gonodono137@gmail.com"
+                email = "88364058+gonodono@users.noreply.github.com"
             }
         }
     }

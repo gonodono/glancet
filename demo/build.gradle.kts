@@ -7,16 +7,6 @@ plugins {
     alias(libs.plugins.glimpse)
 }
 
-// Example of using the plugin extension.
-// The values given below are the defaults.
-// Be sure to rebuild after any changes.
-glimpse {
-    remoteAdapter = true
-    scrollableLazyColumn = true
-    scrollableLazyVerticalGrid = true
-    suppressPluginLogs = false
-}
-
 android {
     namespace = "dev.gonodono.glimpse.demo"
     compileSdk = 36

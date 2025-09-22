@@ -78,7 +78,7 @@
         <receiver
             android:name=".ScrollableLazyColumnWidgetReceiver"
             android:exported="true"
-            android:label="@string/lazy_column_compat">
+            android:label="@string/scrollable_lazy_column">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -90,7 +90,7 @@
         <receiver
             android:name=".ScrollableLazyVerticalGridWidgetReceiver"
             android:exported="true"
-            android:label="@string/lazy_vertical_grid_compat">
+            android:label="@string/scrollable_lazy_vertical_grid">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>

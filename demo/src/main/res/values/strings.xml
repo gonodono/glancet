@@ -7,7 +7,7 @@
     <string name="stack_view">StackView</string>
     <string name="adapter_view_flipper">AdapterViewFlipper</string>
 
-    <string name="lazy_column_compat">ScrollableLazyColumn</string>
-    <string name="lazy_vertical_grid_compat">ScrollableLazyVerticalGrid</string>
+    <string name="scrollable_lazy_column">ScrollableLazyColumn</string>
+    <string name="scrollable_lazy_vertical_grid">ScrollableLazyVerticalGrid</string>
 
 </resources>

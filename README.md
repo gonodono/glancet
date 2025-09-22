@@ -1,170 +1,33 @@
 # Glimpse
 
-Tools and extended composables for [Glance app widgets on Android][glance]
+Tools and extended composables for [Glance app widgets on Android][glance].
+
+The current features comprise `AdapterView` workarounds and enhancements for
+which Glance has no corresponding functionalities.
 
 <br />
 
 - **GlanceModifier.remoteAdapter**
 
-  Allows the use of `AdapterView`s with `AndroidRemoteViews`, giving us access
-  to `StackView` and `AdapterViewFlipper`, analogs for which Glance doesn't yet
-  have.
+  A modifier that allows the use of `AdapterView`s with `AndroidRemoteViews`,
+  giving us access to `StackView` and `AdapterViewFlipper`.
 
 - **ScrollableLazyColumn & ScrollableLazyVerticalGrid**
 
-  These extended composables add a state parameter that gives access to
-  `AdapterView`'s `smoothScrollToPosition` and `smoothScrollByOffset` methods,
-  allowing programmatic scroll on API levels 31+ (which `remoteAdapter` also
-  offers).
+  Extended composables that offer access to `AdapterView`'s
+  `smoothScrollToPosition` and `smoothScrollByOffset` methods, allowing
+  programmatic scroll on API levels 31+ (which `remoteAdapter` also offers).
 
 <br />
 
 ## Contents
 
-- [**Setup**](#setup)
 - [**GlanceModifier.remoteAdapter**](#glancemodifierremoteadapter)
 - [**ScrollableLazyColumn & ScrollableLazyVerticalGrid**](#scrollablelazycolumn--scrollablelazyverticalgrid)
+- [**Gradle setup**](#gradle-setup)
 - [**Version map**](#version-map)
 - [**Notes**](#notes)
 - [**Documentation ↗**][documentation]
-
-<br />
-
-## Setup
-
-The library accomplishes its effects by slightly altering Glance's bytecode to
-insert calls to local code where the underlying `RemoteViews` are modified
-directly. The bytecode manipulation is handled by a custom Gradle plugin that
-uses [a built-in AGP functionality][transform] along with some basic Java ASM.
-
-### Publishing
-
-For the time being, the `library` and `plugin` modules will have to be built and
-published manually in order to be able to use this (unless you'd like to include
-the projects directly). If you use a local Maven repository, all it takes is to
-run two predefined Gradle tasks in this project, and then to add a couple of
-`mavenLocal()` lines to your app's project.
-
-1. In Glimpse, run `./gradlew :library:publishToMavenLocal` either through a
-   terminal, or from the Gradle task window in Android Studio. (Or, if you're
-   reading this in your IDE and that command renders as an action, just run it
-   from here.)
-
-2. In Glimpse again, run `./gradlew :plugin:publishToMavenLocal` the same way.
-
-3. In your app project's `settings.gradle.kts`, assuming a modern setup, add
-   `mavenLocal()` to the `repositories {}` blocks that are inside both the
-   `pluginManagement {}` block, and the `dependencyResolutionManagement {}`
-   block. For example:
-
-   ```kotlin
-   pluginManagement {
-       repositories {
-           …
-           mavenLocal()
-       }
-   }
-   dependencyResolutionManagement {
-       …
-       repositories {
-           …
-           mavenLocal()
-       }
-   }
-   …
-   ```
-
-That's it. The repository, which is just a directory under your user account's
-home, will be set up automagically, if it's not already there. After that, this
-is a standard plugin and dependency setup, which these days looks something like
-the following.
-
-### App configuration
-
-Note that the library and plugin are currently being published using the hosting
-service's domain, so their ID – `io.github.gonodono.glimpse`– is different than
-the Java package name used in code, `dev.gonodono.glimpse`. The `io.github`
-identifiers are only ever used for the build dependencies.
-
-Also note that the main module is named `library` in the source code in order to
-avoid naming conflicts, but it's published as `glimpse`.
-
-`libs.versions.toml`:
-
-```toml
-[versions]
-#…
-glimpse = "0.0.1"
-
-[libraries]
-#…
-glimpse-library = { module = "io.github.gonodono.glimpse:glimpse", version.ref = "glimpse" }
-
-[plugins]
-#…
-glimpse-plugin = { id = "io.github.gonodono.glimpse", version.ref = "glimpse" }
-```
-
-Project's `build.gradle.kts`:
-
-```kotlin
-plugins {
-    …
-    alias(libs.plugins.glimpse.plugin) apply false
-}
-```
-
-App's `build.gradle.kts`:
-
-```kotlin
-plugins {
-    …
-    alias(libs.plugins.glimpse.plugin)
-}
-
-…
-
-glimpse {
-    suppressPluginLogs = true
-}
-
-…
-
-dependencies {
-    …
-    implementation(libs.glimpse.library)
-}
-```
-
-The short `glimpse {}` example above shows how to disable the logs, and there's
-a full example with all available options and their default values in the `demo`
-modules's [`build.gradle.kts` file][demo-build].
-
-### Plugin logs
-
-For reference, the default settings will produce the following build logs for a
-debug variant. (A single log would probably be preferable, but the particular
-tool involved makes that a bit tricky.)
-
-```
-Glimpse has modified debug to enable remoteAdapter.
-Glimpse has modified debug to enable scrollableLazyColumn.
-Glimpse has modified debug to enable scrollableLazyVerticalGrid.
-```
-
-### Lint check
-
-All of the library's current features require the plugin, and there is a lint
-check that will show errors if the plugin is missing, or if a given feature has
-been inadvertently disabled while trying to use it. This check relies on build
-output from the plugin. It will not work correctly if the build isn't up to date
-with the plugin settings.
-
-<br />
-
-> [!IMPORTANT]
-> Be sure to rebuild your project after adding the plugin or changing any of its
-> options.
 
 <br />
 
@@ -173,12 +36,12 @@ with the plugin settings.
 `AdapterView`s don't work reliably in `AndroidRemoteViews` due to a bug in
 `RemoteViews` that causes `setRemoteAdapter` to fail on nested instances in
 certain host setups. This can be avoided by simply moving the `setRemoteAdapter`
-call to the parent `RemoteViews`, but we don't have access to any of that here
-since it's all been abstracted away.
+call to the parent `RemoteViews`, but we don't have access to any of that in
+Glance since it's all been abstracted away.
 
 `GlanceModifier.remoteAdapter` works around this by passing the adapter data to
-a function that's been inserted into Glance where the parent `RemoteViews` can
-be accessed directly.
+a function that's been inserted into Glance's bytecode where the parent
+`RemoteViews` can be accessed and modified directly.
 
 ### Example
 
@@ -226,7 +89,7 @@ The difference between the two types is the scroll functions that each offers,
 which are covered below.
 
 Complete examples can be found in the `demo`'s [`RemoteAdapterWidgets`
-file][remote-adapter].
+file][remoteadapter].
 
 ### Lint check
 
@@ -308,11 +171,109 @@ fun ScrollableLazyColumnExample() {
 }
 ```
 
-Both of the compat composables use the same `rememberScrollableLazyState` function
-and state type.
+Both of the scrollable composables use the same `rememberScrollableLazyState`
+function and state type.
 
 Complete examples can be found in the `demo` module's [`ScrollableLazyWidgets`
-file][lazy-compat].
+file][scrollablelazy].
+
+<br />
+
+## Gradle setup
+
+- The plugin is required for all of the current library features.
+
+- Everything is published to Maven Central, so your Android project should
+  already have that repository specified in its `settings.gradle[.kts]`.
+
+- The library and plugin are published using the hosting service's domain, so
+  their ID – `io.github.gonodono.glimpse` – is different than the Java package
+  name used in code, `dev.gonodono.glimpse`. The `io.github` identifiers are
+  only ever used for the build dependencies.
+
+- The main module is named `library` in the source code in order to
+  avoid naming conflicts, but it's published as `glimpse`.
+
+- The following snippets are simply examples. Your setup may be different.
+
+`libs.versions.toml`:
+
+```toml
+[versions]
+#…
+glimpse = "[latest-release]"
+
+[libraries]
+#…
+glimpse-library = { module = "io.github.gonodono.glimpse:glimpse", version.ref = "glimpse" }
+
+[plugins]
+#…
+glimpse-plugin = { id = "io.github.gonodono.glimpse", version.ref = "glimpse" }
+```
+
+<sup>The `[latest-release]` can be found at the top of
+[the Releases page][releases].</sup>
+
+Project's `build.gradle.kts`:
+
+```kotlin
+plugins {
+    …
+    alias(libs.plugins.glimpse.plugin) apply false
+}
+```
+
+App's `build.gradle.kts`:
+
+```kotlin
+plugins {
+    …
+    alias(libs.plugins.glimpse.plugin)
+}
+
+…
+
+glimpse {
+    suppressPluginLogs = true
+}
+
+…
+
+dependencies {
+    …
+    implementation(libs.glimpse.library)
+}
+```
+
+The short `glimpse {}` example above shows how to disable the logs, and there's
+a full example with all available options and their default values shown in [the
+plugin's docs][plugin-docs].
+
+### Plugin logs
+
+For reference, the default settings will produce the following build logs for a
+debug variant. (A single log would probably be preferable, but the particular
+tool involved makes that a bit tricky.)
+
+```
+Glimpse has modified debug to enable remoteAdapter.
+Glimpse has modified debug to enable scrollableLazyColumn.
+Glimpse has modified debug to enable scrollableLazyVerticalGrid.
+```
+
+### Lint check
+
+Included is a lint check that will show errors if the plugin is missing, or if a
+given feature has been inadvertently disabled while trying to use it. This check
+relies on build output from the plugin. It will not work correctly if the build
+isn't up to date with the plugin settings.
+
+<br />
+
+> [!IMPORTANT]
+> Be sure to rebuild your project after adding the plugin or changing any of its
+> options.
 
 <br />
 
@@ -327,14 +288,24 @@ not tested any.
 | 1.2.0-alpha01 |    "    |   "    |
 | 1.2.0-beta01  |    "    |   "    |
 
+> [!WARNING]
+> Currently, these mappings are not enforced in any way. It is up to the user to
+> ensure the correct versions.
+
 <br />
 
 ## Notes
 
 - This project used to be called Glancet, but I've abruptly changed it before
   publishing the first release. In addition to the relevant package and build
-  changes, I've also renamed the Composables. If you were using this already,
+  changes, I've also renamed the composables. If you were using this already,
   my apologies.
+
+- The library accomplishes its effects by slightly altering Glance's bytecode to
+  insert calls to local code where the underlying `RemoteViews` are modified
+  directly. The bytecode manipulation is performed by the custom Gradle plugin
+  using [a built-in AGP functionality][transform] along with some basic Java
+  ASM.
 
 - All of the current features involve custom `GlanceModifier` implementations,
   and Glance prints a warning log anytime it encounters one that's not its own.
@@ -402,7 +373,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 [glance]: https://developer.android.com/develop/ui/compose/glance
 [documentation]: https://gonodono.github.io/glimpse
 [transform]: https://developer.android.com/build/releases/gradle-plugin-api-updates#support_for_transforming_bytecode
-[demo-build]: demo/build.gradle.kts
-[remote-adapter]: demo/src/main/kotlin/dev/gonodono/glimpse/demo/RemoteAdapterWidgets.kt
-[lazy-compat]: demo/src/main/kotlin/dev/gonodono/glimpse/demo/ScrollableLazyWidgets.kt
+[plugin-docs]: https://gonodono.github.io/glimpse/plugin/index.html
+[remoteadapter]: demo/src/main/kotlin/dev/gonodono/glimpse/demo/RemoteAdapterWidgets.kt
+[scrollablelazy]: demo/src/main/kotlin/dev/gonodono/glimpse/demo/ScrollableLazyWidgets.kt
+[releases]: https://github.com/gonodono/glimpse/releases
 [issues]: https://github.com/gonodono/glimpse/issues
