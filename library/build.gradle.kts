@@ -56,13 +56,13 @@ mavenPublishing {
         description =
             "Tools and extended composables for Glance app widgets on Android."
         url =
-            "https://github.com/gonodono/glimpse"
+            requireProperty("repository.url")
         inceptionYear =
             "2025"
 
         scm {
             url =
-                "https://github.com/gonodono/glimpse"
+                requireProperty("repository.url")
             connection =
                 "scm:git:git://github.com/gonodono/glimpse.git"
             developerConnection =
@@ -77,8 +77,8 @@ mavenPublishing {
         developers {
             developer {
                 id = "gonodono"
-                name = "Mike M."
-                email = "88364058+gonodono@users.noreply.github.com"
+                name = requireProperty("developer.name")
+                email = requireProperty("developer.email")
             }
         }
     }

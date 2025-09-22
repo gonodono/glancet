@@ -115,8 +115,9 @@ can't scroll it themselves.
 <br />
 
 > [!WARNING]
-> The programmatic scroll functions only work on API levels 31+, but there are
-> currently no annotations or lint warnings to indicate that.
+> The programmatic scroll functions for both `remoteAdapter` and the
+> `Scrollable` composables only work on API levels 31+, but there are currently
+> no annotations or lint warnings to indicate that.
 
 <br />
 
@@ -181,27 +182,16 @@ file][scrollablelazy].
 
 ## Gradle setup
 
-- The plugin is required for all of the current library features.
+The following snippets are simply examples. Your setup may be different.
 
-- Everything is published to Maven Central, so your Android project should
-  already have that repository specified in its `settings.gradle[.kts]`.
-
-- The library and plugin are published using the hosting service's domain, so
-  their ID – `io.github.gonodono.glimpse` – is different than the Java package
-  name used in code, `dev.gonodono.glimpse`. The `io.github` identifiers are
-  only ever used for the build dependencies.
-
-- The main module is named `library` in the source code in order to
-  avoid naming conflicts, but it's published as `glimpse`.
-
-- The following snippets are simply examples. Your setup may be different.
+The latest release can be found at the top of [the Releases page][releases].
 
 `libs.versions.toml`:
 
 ```toml
 [versions]
 #…
-glimpse = "[latest-release]"
+glimpse = "<latest-release>"
 
 [libraries]
 #…
@@ -211,9 +201,6 @@ glimpse-library = { module = "io.github.gonodono.glimpse:glimpse", version.ref =
 #…
 glimpse-plugin = { id = "io.github.gonodono.glimpse", version.ref = "glimpse" }
 ```
-
-<sup>The `[latest-release]` can be found at the top of
-[the Releases page][releases].</sup>
 
 Project's `build.gradle.kts`:
 
@@ -264,23 +251,30 @@ Glimpse has modified debug to enable scrollableLazyVerticalGrid.
 
 ### Lint check
 
-Included is a lint check that will show errors if the plugin is missing, or if a
+A lint check is included that will show errors if the plugin is missing, or if a
 given feature has been inadvertently disabled while trying to use it. This check
 relies on build output from the plugin. It will not work correctly if the build
 isn't up to date with the plugin settings.
-
-<br />
 
 > [!IMPORTANT]
 > Be sure to rebuild your project after adding the plugin or changing any of its
 > options.
 
+### Gradle notes
+
+- The plugin is required for all of the current library features.
+
+- Everything is published to Maven Central. Your Android project should already
+  have `mavenCentral()` specified in its `settings.gradle[.kts]`.
+
+- The library and plugin are published using the hosting service's domain, so
+  their group ID – `io.github.gonodono.glimpse` – is different than the Java
+  package name used in code, `dev.gonodono.glimpse`. The `io.github` identifiers
+  are only ever used for the build dependencies.
+
 <br />
 
 ## Version map
-
-This first release probably works with some older Glance versions too, but I've
-not tested any.
 
 |    Glance     | Glimpse | Plugin |
 |:-------------:|:-------:|:------:|
@@ -288,13 +282,15 @@ not tested any.
 | 1.2.0-alpha01 |    "    |   "    |
 | 1.2.0-beta01  |    "    |   "    |
 
-<br />
+This first release probably works with some older Glance versions too, but I've
+not tested any.
 
 > [!WARNING]
 > Currently, these mappings are not enforced in any way. It is up to the user to
 > ensure correct corresponding versions. There is no guaranteed behavior for
-> mismatches; failure might occur during build or at runtime, it may be an
-> explicit Exception or it could be silent and cause delayed issues, etc.
+> mismatches; it might work perfectly, or it may fail during build or runtime,
+> it might throw an explicit Exception or it could fail silently and cause
+> delayed issues, etc.
 
 <br />
 

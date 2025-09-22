@@ -34,7 +34,7 @@ project.version = rootProperties.requireProperty("plugin.version")
 
 gradlePlugin {
     website = rootProperties.requireProperty("repository.url")
-    vcsUrl = rootProperties.requireProperty("repository.git")
+    vcsUrl = "$website.git"
 
     plugins {
         register("glimpse") {
@@ -71,7 +71,7 @@ mavenPublishing {
 
         scm {
             url =
-                "https://github.com/gonodono/glimpse"
+                rootProperties.requireProperty("repository.url")
             connection =
                 "scm:git:git://github.com/gonodono/glimpse.git"
             developerConnection =
@@ -86,8 +86,8 @@ mavenPublishing {
         developers {
             developer {
                 id = "gonodono"
-                name = "Mike M."
-                email = "88364058+gonodono@users.noreply.github.com"
+                name = rootProperties.requireProperty("developer.name")
+                email = rootProperties.requireProperty("developer.email")
             }
         }
     }
