@@ -32,6 +32,8 @@ internal sealed interface RemoteAdapter {
 
     val adapterViewId: Int
 
+    fun applyTo(remoteViews: RemoteViews)
+
     sealed interface Items : RemoteAdapter {
 
         data class Compat(
@@ -39,18 +41,42 @@ internal sealed interface RemoteAdapter {
             val context: Context,
             val appWidgetId: Int,
             val items: RemoteViewsCompat.RemoteCollectionItems
-        ) : Items
+        ) : Items {
+            override fun applyTo(remoteViews: RemoteViews) {
+                RemoteViewsCompat.setRemoteAdapter(
+                    context = context,
+                    remoteViews = remoteViews,
+                    appWidgetId = appWidgetId,
+                    viewId = adapterViewId,
+                    items = items
+                )
+            }
+        }
 
         data class Platform(
             override val adapterViewId: Int,
             val items: RemoteViews.RemoteCollectionItems
-        ) : Items
+        ) : Items {
+            override fun applyTo(remoteViews: RemoteViews) {
+                if (Build.VERSION.SDK_INT < 31) return
+                RemoteAdapterHelper.setRemoteAdapter(
+                    remoteViews = remoteViews,
+                    adapterViewId = adapterViewId,
+                    items = items
+                )
+            }
+        }
     }
 
     data class Intents(
         override val adapterViewId: Int,
         val intent: Intent
-    ) : RemoteAdapter
+    ) : RemoteAdapter {
+        override fun applyTo(remoteViews: RemoteViews) {
+            @Suppress("DEPRECATION")
+            remoteViews.setRemoteAdapter(adapterViewId, intent)
+        }
+    }
 }
 
 // NB: This must remain in the same file as the corresponding GlanceModifier
@@ -59,31 +85,9 @@ internal sealed interface RemoteAdapter {
 internal fun RemoteViews.setRemoteAdapterIfPresent(modifier: GlanceModifier) {
     val remoteAdapter = modifier.find<RemoteAdapterModifier>() ?: return
 
-    when (val adapter = remoteAdapter.state.adapter) {
-        is RemoteAdapter.Items.Compat -> {
-            RemoteViewsCompat.setRemoteAdapter(
-                context = adapter.context,
-                remoteViews = this,
-                appWidgetId = adapter.appWidgetId,
-                viewId = adapter.adapterViewId,
-                items = adapter.items
-            )
-        }
-        is RemoteAdapter.Items.Platform -> {
-            if (Build.VERSION.SDK_INT < 31) return
-            RemoteAdapterHelper.setRemoteAdapter(
-                remoteViews = this,
-                adapterViewId = adapter.adapterViewId,
-                items = adapter.items
-            )
-        }
-        is RemoteAdapter.Intents -> {
-            @Suppress("DEPRECATION")
-            setRemoteAdapter(adapter.adapterViewId, adapter.intent)
-        }
-    }
-
-    remoteAdapter.state.action?.invoke(this)
+    val state = remoteAdapter.state
+    state.adapter.applyTo(this)
+    state.action?.invoke(this)
 }
 
 @RequiresApi(31)

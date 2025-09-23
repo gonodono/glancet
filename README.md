@@ -1,6 +1,6 @@
 # Glimpse
 
-Tools and extended composables for [Glance app widgets on Android][glance].
+Tools and extended composables for [Glance app widgets][glance] on Android.
 
 The current features comprise `AdapterView` workarounds and enhancements for
 which Glance has no corresponding functionalities.
@@ -24,7 +24,7 @@ which Glance has no corresponding functionalities.
 - [**ScrollableLazyColumn & ScrollableLazyVerticalGrid**](#scrollablelazycolumn--scrollablelazyverticalgrid)
 - [**Gradle setup**](#gradle-setup)
 - [**Version map**](#version-map)
-- [**Notes**](#notes)
+- [**Project notes**](#project-notes)
 - [**Documentation ↗**][documentation]
 
 <br />
@@ -37,9 +37,9 @@ certain host setups. This can be avoided by simply moving the `setRemoteAdapter`
 call to the parent `RemoteViews`, but we don't have access to any of that in
 Glance since it's all been abstracted away.
 
-`GlanceModifier.remoteAdapter` works around this by passing the adapter data to
-a function that's been injected into Glance's bytecode where the parent
-`RemoteViews` can be accessed and modified directly.
+[`GlanceModifier.remoteAdapter`][remoteAdapter] works around this by passing the
+adapter data to a function that's been injected into Glance's bytecode where the
+parent `RemoteViews` can be accessed and modified directly.
 
 ### Example
 
@@ -75,10 +75,10 @@ fun RemoteAdapterExample() {
 The state object is created with a standard `remember*State` function, one
 available for each type of `AdapterView` (not counting overloads):
 
-- `rememberListViewState`
-- `rememberGridViewState`
-- `rememberStackViewState`
-- `rememberAdapterViewFlipperState`
+- [`rememberListViewState`][rememberListViewState]
+- [`rememberGridViewState`][rememberGridViewState]
+- [`rememberStackViewState`][rememberStackViewState]
+- [`rememberAdapterViewFlipperState`][rememberAdapterViewFlipperState]
 
 These functions are all separate for clarity and ease of use, though there are
 really only two different types. The `ListView` and `GridView` ones return
@@ -86,8 +86,8 @@ exactly the same thing, as do the `StackView` and `AdapterViewFlipper` versions.
 The difference between the two types is the scroll functions that each offers,
 which are covered below.
 
-Complete examples can be found in the `demo`'s [`RemoteAdapterWidgets`
-file][remoteadapter].
+Complete examples can be found in the `demo`'s
+[`RemoteAdapterWidgets`][RemoteAdapterWidgets].
 
 ### Lint check
 
@@ -99,18 +99,44 @@ composable.
 
 ### Programmatic scroll
 
-**<sup>(API levels 31+)</sup>**
+<sup>(API levels 31+)</sup>
 
-As mentioned, `remoteAdapter` states also provide access to the smooth scroll
-functions, which are used by `ListView` and `GridView`. `StackView` and
-`AdapterViewFlipper` are actually a different type of `AdapterView`, and their
-state interface offers `setDisplayedChild`, `showNext`, and `showPrevious`
-instead.
+The scroll functions work in basically the same manner as the adapter feature:
+state data is attached to the modifier, whence it is later retrieved and applied
+by a function injected into Glance's bytecode.
 
-Both types have the same API level restrictions and fallback behavior as
-described in the next section. Please note that those restrictions mean that
-`AdapterViewFlipper` is essentially useless on API levels < 31, since the user
-can't scroll it themselves.
+As mentioned above, `ListView` and `GridView` share a state type, and it defines
+scroll functions that mirror those in `AbsListView`.
+
+[`AbsListViewState`][AbsListViewState]:
+
+```kotlin
+fun smoothScrollToPosition(position: Int)
+fun smoothScrollByOffset(offset: Int)
+```
+
+The state for `StackView` and `AdapterViewFlipper` defines functions from
+`AdapterViewAnimator`.
+
+[`AdapterViewAnimatorState`][AdapterViewAnimatorState]:
+
+```kotlin
+fun setDisplayedChild(whichChild: Int)
+fun showNext()
+fun showPrevious()
+```
+
+All of the scroll functions have the same API level restrictions: they only work
+on API levels 31+. They are no-ops on prior versions, as noted in their docs.
+This is due to the fact that Glance only ever performs full updates – i.e., no
+`partiallyUpdateAppWidget` – and 31 is the first version to preserve state like
+the scroll position across such updates.
+
+Please note that this means that `AdapterViewFlipper` is essentially useless on
+API levels < 31, since users cannot scroll it themselves.
+
+Consult the [`ScrollableLazyColumnExample`](#example-1) below for a
+straightforward demonstration of the scroll functions.
 
 <br />
 
@@ -123,23 +149,26 @@ can't scroll it themselves.
 
 ## ScrollableLazyColumn & ScrollableLazyVerticalGrid
 
-**<sup>(API levels 31+)</sup>**
+<sup>(API levels 31+)</sup>
+<br />
 
-Each of these simply adds to the base function a single parameter for a "state"
-interface that exposes the `smoothScrollToPosition` and `smoothScrollByOffset`
-functions.
+[`ScrollableLazyColumn`][ScrollableLazyColumn] and
+[`ScrollableLazyVerticalGrid`][ScrollableLazyVerticalGrid] are wrappers around
+their base composables that add a single state parameter which defines functions
+from `AbsListView`, since they translate to `ListView`s and `GridView`s.
 
-Unfortunately these functions only work on API levels 31 and above, due to the
-fact that Glance only ever performs full updates – i.e., no
-`partiallyUpdateAppWidget` – and 31 is the first version to preserve state like
-the scroll position across such updates.
+[`ScrollableLazyState`][ScrollableLazyState]:
 
-I'm not sure how to handle this, however, since `@RequiresApi` annotations are a
-bit unorthodox in Compose. It seems they prefer to mention in the docs that a
-given feature doesn't work on certain versions, so that's how it's setup for
-this first release: the scroll and child functions simply don't do anything on
-API levels prior to 31, and it's noted in the relevant docs. I may add some lint
-checks in the future, or it may end up with some `@RequiresApi`s.
+```kotlin
+fun smoothScrollToPosition(position: Int)
+fun smoothScrollByOffset(offset: Int)
+```
+
+Both use the same [`rememberScrollableLazyState`][rememberScrollableLazyState]
+function and state type.
+
+Again these functions only work on API levels 31 and above. They are no-ops on
+prior versions, as noted in their docs.
 
 ### Example
 
@@ -172,26 +201,34 @@ fun ScrollableLazyColumnExample() {
 }
 ```
 
-Both of the scrollable composables use the same `rememberScrollableLazyState`
-function and state type.
-
-Complete examples can be found in the `demo` module's [`ScrollableLazyWidgets`
-file][scrollablelazy].
+Complete examples can be found in the `demo` module's
+[`ScrollableLazyWidgets`][ScrollableLazyWidgets].
 
 <br />
 
 ## Gradle setup
 
-The following snippets are simply examples. Your setup may be different.
+The library is accompanied by a custom Gradle plugin that handles the necessary
+bytecode manipulation. This plugin is required for all of the library's current
+features.
 
-The latest release can be found at the top of [the Releases page][releases].
+Everything is published to Maven Central, and an Android project should already
+have that repository correctly specified in its `settings.gradle[.kts]`. If not,
+consult [this project's settings file][settings] for the proper configuration.
+
+Note that the library and plugin are published using the hosting service's
+domain, so their group ID – `io.github.gonodono.glimpse` – is different than the
+Java package name used in code, `dev.gonodono.glimpse`. The `io.github`
+identifiers are only ever used for build dependencies.
+
+The following snippets are simply examples. Your specific setup may be different.
 
 `libs.versions.toml`:
 
 ```toml
 [versions]
 #…
-glimpse = "<latest-release>"
+glimpse = "?.?.?*"
 
 [libraries]
 #…
@@ -201,6 +238,8 @@ glimpse-library = { module = "io.github.gonodono.glimpse:glimpse", version.ref =
 #…
 glimpse-plugin = { id = "io.github.gonodono.glimpse", version.ref = "glimpse" }
 ```
+
+<sup>* Check [Releases][releases] for the latest.</sup>
 
 Project's `build.gradle.kts`:
 
@@ -260,18 +299,6 @@ isn't up to date with the plugin settings.
 > Be sure to rebuild your project after adding the plugin or changing any of its
 > options.
 
-### Gradle notes
-
-- The plugin is required for all of the current library features.
-
-- Everything is published to Maven Central. Your Android project should already
-  have `mavenCentral()` specified in its `settings.gradle[.kts]`.
-
-- The library and plugin are published using the hosting service's domain, so
-  their group ID – `io.github.gonodono.glimpse` – is different than the Java
-  package name used in code, `dev.gonodono.glimpse`. The `io.github` identifiers
-  are only ever used for the build dependencies.
-
 <br />
 
 ## Version map
@@ -294,7 +321,7 @@ not tested any.
 
 <br />
 
-## Notes
+## Project notes
 
 - This project used to be called Glancet, but I abruptly changed it before
   publishing the first release. In addition to the relevant package and build
@@ -372,9 +399,21 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 [glance]: https://developer.android.com/develop/ui/compose/glance
 [documentation]: https://gonodono.github.io/glimpse
-[transform]: https://developer.android.com/build/releases/gradle-plugin-api-updates#support_for_transforming_bytecode
-[plugin-docs]: https://gonodono.github.io/glimpse/plugin/index.html
-[remoteadapter]: demo/src/main/kotlin/dev/gonodono/glimpse/demo/RemoteAdapterWidgets.kt
-[scrollablelazy]: demo/src/main/kotlin/dev/gonodono/glimpse/demo/ScrollableLazyWidgets.kt
+[remoteAdapter]: https://gonodono.github.io/glimpse/glimpse/library/dev.gonodono.glimpse.remoteadapter/remote-adapter.html
+[rememberListViewState]: https://gonodono.github.io/glimpse/glimpse/library/dev.gonodono.glimpse.remoteadapter/remember-list-view-state.html
+[rememberGridViewState]: https://gonodono.github.io/glimpse/glimpse/library/dev.gonodono.glimpse.remoteadapter/remember-grid-view-state.html
+[rememberStackViewState]: https://gonodono.github.io/glimpse/glimpse/library/dev.gonodono.glimpse.remoteadapter/remember-stack-view-state.html
+[rememberAdapterViewFlipperState]: https://gonodono.github.io/glimpse/glimpse/library/dev.gonodono.glimpse.remoteadapter/remember-adapter-view-flipper-state.html
+[RemoteAdapterWidgets]: demo/src/main/kotlin/dev/gonodono/glimpse/demo/RemoteAdapterWidgets.kt
+[AbsListViewState]: https://gonodono.github.io/glimpse/glimpse/library/dev.gonodono.glimpse.remoteadapter/-abs-list-view-state/index.html
+[AdapterViewAnimatorState]: https://gonodono.github.io/glimpse/glimpse/library/dev.gonodono.glimpse.remoteadapter/-adapter-view-animator-state/index.html
+[ScrollableLazyColumn]: https://gonodono.github.io/glimpse/glimpse/library/dev.gonodono.glimpse.scrollablelazy/-scrollable-lazy-column.html
+[ScrollableLazyVerticalGrid]: https://gonodono.github.io/glimpse/glimpse/library/dev.gonodono.glimpse.scrollablelazy/-scrollable-lazy-vertical-grid.html
+[ScrollableLazyState]: https://gonodono.github.io/glimpse/glimpse/library/dev.gonodono.glimpse.scrollablelazy/-scrollable-lazy-state/index.html
+[rememberScrollableLazyState]: https://gonodono.github.io/glimpse/glimpse/library/dev.gonodono.glimpse.scrollablelazy/remember-scrollable-lazy-state.html
+[ScrollableLazyWidgets]: demo/src/main/kotlin/dev/gonodono/glimpse/demo/ScrollableLazyWidgets.kt
+[settings]: settings.gradle.kts
 [releases]: https://github.com/gonodono/glimpse/releases
+[plugin-docs]: https://gonodono.github.io/glimpse/plugin/index.html
+[transform]: https://developer.android.com/build/releases/gradle-plugin-api-updates#support_for_transforming_bytecode
 [issues]: https://github.com/gonodono/glimpse/issues
